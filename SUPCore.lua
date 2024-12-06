@@ -111,14 +111,3 @@ SUP.skillIcons = {
     Thrown = "Interface\\Icons\\INV_ThrowingKnife_02",
     Wands = "Interface\\Icons\\INV_Wand_01"
 }
-
--- Create and anchor a frame
-local frame = CreateFrame("Frame", "SUPFrame", UIParent)
-frame:ClearAllPoints() -- Always clear points before setting new ones
-frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
--- Multiple anchor points example
-local complexFrame = CreateFrame("Frame", "SUPComplexFrame", UIParent)
-complexFrame:ClearAllPoints()
-complexFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 10, -10)
-complexFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -10, 10)
