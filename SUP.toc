@@ -1,0 +1,12 @@
+## Interface: 11404
+## Title: SUP (SkillUp Plus)
+## Notes: Tracks skill ups for Classic Era
+## Author: YourName
+## Version: 1.0
+## SavedVariables: SUPConfig
+
+SUP.xml
+SUPCore.lua
+SUPConfig.lua
+SUPSkillTracker.lua
+SUPNotification.lua 

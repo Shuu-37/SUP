@@ -1,0 +1,142 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+    <!-- Config Frame Template -->
+    <Frame name="SUPConfigFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true"
+        movable="true" inherits="TooltipBackdropTemplate" virtual="true">
+        <Size x="400" y="200" />
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentTitle" inherits="GameFontNormalLarge" text="SkillUp Plus">
+                    <Color r="1" g="0.82" b="0" />
+                    <Anchors>
+                        <Anchor point="TOP" x="0" y="-15" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <!-- Container for Slider and Position Button -->
+            <Frame parentKey="controlsContainer">
+                <Size x="340" y="30" />
+                <Anchors>
+                    <Anchor point="TOP" relativePoint="TOP" x="0" y="-50" />
+                </Anchors>
+
+                <!-- Font Size Slider -->
+                <Frames>
+                    <Slider name="$parentFontSlider" inherits="OptionsSliderTemplate"
+                        parentKey="FontSlider">
+                        <Size x="180" y="20" />
+                        <Anchors>
+                            <Anchor point="LEFT" x="0" y="0" />
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                self:SetMinMaxValues(8, 32)
+                                self:SetValueStep(1)
+                                _G[self:GetName().."Low"]:SetText("8")
+                                _G[self:GetName().."High"]:SetText("32")
+                                _G[self:GetName().."Text"]:SetText("Font Size")
+                            </OnLoad>
+                        </Scripts>
+                    </Slider>
+
+                    <!-- Position Button -->
+                    <Button name="$parentPositionButton" inherits="UIPanelButtonTemplate"
+                        parentKey="positionButton" text="Edit Position">
+                        <Size x="140" y="22" />
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.FontSlider"
+                                relativePoint="RIGHT" x="20" y="0" />
+                        </Anchors>
+                    </Button>
+                </Frames>
+            </Frame>
+
+            <!-- Container for Checkboxes -->
+            <Frame parentKey="checkboxContainer">
+                <Size x="340" y="40" />
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.controlsContainer"
+                        relativePoint="BOTTOM" x="0" y="20" />
+                </Anchors>
+
+                <Frames>
+                    <!-- Icon Checkbox -->
+                    <CheckButton name="$parentIconCheckbox" inherits="UICheckButtonTemplate"
+                        parentKey="iconCheckbox">
+                        <Anchors>
+                            <Anchor point="LEFT" x="-10" y="-30" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontNormal" text="Show Icon">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </CheckButton>
+
+                    <!-- Sound Checkbox -->
+                    <CheckButton name="$parentSoundCheckbox" inherits="UICheckButtonTemplate"
+                        parentKey="soundCheckbox">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.iconCheckbox"
+                                relativePoint="RIGHT" x="90" y="0" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontNormal" text="Play Sound">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </CheckButton>
+
+                    <!-- Debug Checkbox -->
+                    <CheckButton name="$parentDebugCheckbox" inherits="UICheckButtonTemplate"
+                        parentKey="debugCheckbox">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.soundCheckbox"
+                                relativePoint="RIGHT" x="90" y="0" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontNormal" text="Debug Mode">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </CheckButton>
+                </Frames>
+            </Frame>
+
+            <!-- Test Button -->
+            <Button name="$parentTestButton" inherits="UIPanelButtonTemplate"
+                text="Test Notification">
+                <Size x="140" y="32" />
+                <Anchors>
+                    <Anchor point="BOTTOM" x="0" y="20" />
+                </Anchors>
+            </Button>
+
+            <!-- Close Button -->
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="-2" y="-2" />
+                </Anchors>
+            </Button>
+        </Frames>
+    </Frame>
+</Ui>
