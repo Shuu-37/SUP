@@ -94,7 +94,7 @@ SUP.skillIcons = {
     Fishing = "Interface\\Icons\\Trade_Fishing",
 
     -- Weapon Skills
-    Defense = "Interface\\Icons\\Ability_Defense",
+    Defense = "Interface\\Icons\\Ability_Defend",
     Daggers = "Interface\\Icons\\INV_Weapon_ShortBlade_01",
     ["Fist Weapons"] = "Interface\\Icons\\INV_Gauntlets_04",
     ["One-Handed Axes"] = "Interface\\Icons\\INV_Axe_01",
