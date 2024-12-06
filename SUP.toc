@@ -1,7 +1,7 @@
 ## Interface: 11404
 ## Title: SUP (SkillUp Plus)
 ## Notes: Tracks skill ups for Classic Era
-## Author: YourName
+## Author: Shuu
 ## Version: 1.0
 ## SavedVariables: SUPConfig
 
