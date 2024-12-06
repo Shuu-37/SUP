@@ -45,8 +45,8 @@ SUP.frame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" and ... == addonName then
         print("SUP: Loaded successfully!")
         RegisterSlashCommands()
-        SUP.CreateConfigFrame() -- debug
-        SUP.configFrame:Show()
+        -- SUP.CreateConfigFrame() -- debug
+        -- SUP.configFrame:Show() -- debug
         SUP.SkillTracker.Initialize()
     elseif event == "SKILL_LINES_CHANGED" then
         SUP.SkillTracker.CheckForUpdates()
