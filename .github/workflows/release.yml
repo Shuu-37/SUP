@@ -1,0 +1,41 @@
+name: Release SUP Addon
+
+on:
+  push:
+    tags:
+      - "v*" # This will trigger on any tag that starts with 'v'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Addon Package
+        run: |
+          # Create a directory for the addon
+          mkdir -p SUP
+
+          # Copy all necessary files to the directory
+          cp *.lua SUP/
+          cp *.toc SUP/
+          cp *.xml SUP/
+          cp README.md SUP/
+
+          # Create zip file
+          zip -r SUP.zip SUP
+
+      - name: Upload to CurseForge
+        uses: itsmeow/curseforge-upload@v3
+        with:
+          file_path: "SUP.zip"
+          game_endpoint: "wow"
+          game_versions: "1.15.5" # Adjust this based on your WoW version
+          project_id: "${{ secrets.CURSEFORGE_PROJECT_ID }}"
+          token: "${{ secrets.CURSEFORGE_TOKEN }}"
+          changelog: "See GitHub releases for changelog"
+          changelog_type: "markdown"
+          display_name: "SUP-${{ github.ref_name }}"
+          release_type: "release"
