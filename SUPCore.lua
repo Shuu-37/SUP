@@ -43,7 +43,7 @@ SUP.frame:RegisterEvent("CHAT_MSG_SKILL")
 SUP.frame:RegisterEvent("SKILL_LINES_CHANGED")
 SUP.frame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" and ... == addonName then
-        print("SUP: Loaded successfully!")
+        print("SUP: Loaded successfully! Use /sup to open the configuration window.")
         RegisterSlashCommands()
         -- SUP.CreateConfigFrame() -- debug
         -- SUP.configFrame:Show() -- debug
