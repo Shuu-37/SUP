@@ -1,31 +1,18 @@
-# IDE and Editor files
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor Files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Lua language server files
-.luarc.json
-.lua/
-.luacheckrc
-
-# WoW API type definition files
-WowLuaAPIs/
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# WoW specific
-*.bak
-Blizzard_*
-Interface/AddOns/Blizzard_*
+# Lua/WoW specific
+*.saved
+SavedVariables/
 WTF/
-Cache/
-Screenshots/
-Logs/
+
+# Build/Package Files
+*.zip
+SUP/
