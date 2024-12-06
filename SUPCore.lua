@@ -69,10 +69,10 @@ SUP.trackableSkills = {
     "Cooking", "First Aid", "Fishing",
 
     -- Weapon Skills
-    "Daggers", "Fist Weapons", "One-Handed Axes", "One-Handed Maces",
+    "Defense", "Daggers", "Fist Weapons", "One-Handed Axes", "One-Handed Maces",
     "One-Handed Swords", "Polearms", "Staves", "Two-Handed Axes",
     "Two-Handed Maces", "Two-Handed Swords", "Bows", "Crossbows",
-    "Guns", "Thrown", "Wands"
+    "Guns", "Thrown", "Wands", "Unarmed"
 }
 
 -- Add skill icons
@@ -83,9 +83,7 @@ SUP.skillIcons = {
     Enchanting = "Interface\\Icons\\Trade_Engraving",
     Engineering = "Interface\\Icons\\Trade_Engineering",
     Herbalism = "Interface\\Icons\\Trade_Herbalism",
-    Inscription = "Interface\\Icons\\INV_Inscription_Tradeskill01",
-    Jewelcrafting = "Interface\\Icons\\INV_Misc_Gem_01",
-    Leatherworking = "Interface\\Icons\\Trade_LeatherWorking",
+    Leatherworking = "Interface\\Icons\\Trade_Leatherworking",
     Mining = "Interface\\Icons\\Trade_Mining",
     Skinning = "Interface\\Icons\\INV_Misc_Pelt_Wolf_01",
     Tailoring = "Interface\\Icons\\Trade_Tailoring",
@@ -96,6 +94,7 @@ SUP.skillIcons = {
     Fishing = "Interface\\Icons\\Trade_Fishing",
 
     -- Weapon Skills
+    Defense = "Interface\\Icons\\Ability_Defense",
     Daggers = "Interface\\Icons\\INV_Weapon_ShortBlade_01",
     ["Fist Weapons"] = "Interface\\Icons\\INV_Gauntlets_04",
     ["One-Handed Axes"] = "Interface\\Icons\\INV_Axe_01",
