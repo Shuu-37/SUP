@@ -64,15 +64,14 @@ end
 
 -- Event handling
 SUP.frame:RegisterEvent("ADDON_LOADED")
-SUP.frame:RegisterEvent("CHAT_MSG_SKILL")
 SUP.frame:RegisterEvent("SKILL_LINES_CHANGED")
 SUP.frame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" and ... == addonName then
         print("SUP: Loaded successfully! Use /sup to open the configuration window.")
         RegisterSlashCommands()
         -- Creates the configFrame and shows it immediately on load
-        -- SUP.CreateConfigFrame()
-        -- SUP.configFrame:Show()
+        SUP.CreateConfigFrame()
+        SUP.configFrame:Show()
         -- Create the anchor frame immediately on load
         if not SUP.anchorFrame then
             SUP.anchorFrame = SUP.CreateAnchorFrame()

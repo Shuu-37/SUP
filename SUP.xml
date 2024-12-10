@@ -227,9 +227,11 @@
                         SUPConfig.debugMode = self.active;
                         if self.active then
                         self:SetButtonState("PUSHED", true);
+                        self:GetParent().reloadButton:Show()
                         print("|cFF00FF00[SUP]|r Debug mode enabled");
                         else
                         self:SetButtonState("NORMAL");
+                        self:GetParent().reloadButton:Hide()
                         print("|cFF00FF00[SUP]|r Debug mode disabled");
                         end
                     </OnClick>
@@ -257,6 +259,10 @@
                 <Scripts>
                     <OnLoad>
                         print("SUP: Reload Button Loading...");
+                        -- Hide initially if debug mode is off
+                        if not SUPConfig.debugMode then
+                        self:Hide()
+                        end
                     </OnLoad>
                     <OnClick>
                         ReloadUI()
