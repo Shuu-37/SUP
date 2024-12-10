@@ -8,5 +8,6 @@
 SUP.xml
 SUPCore.lua
 SUPConfig.lua
+SUPAnchorFrame.lua
 SUPSkillTracker.lua
 SUPNotification.lua 
