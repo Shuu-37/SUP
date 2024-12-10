@@ -8,6 +8,7 @@ local table = table
 local string = string
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
+local SUPConfig = SUPConfig
 
 function SUP.CalculateNotificationWidth(fontSize, text, showIcon)
     -- Get text width only if there's actual text content
@@ -26,14 +27,18 @@ function SUP.CreateNotificationFrame()
 
     frame:SetSize(250, 50)
     frame:SetFrameStrata("HIGH")
-    frame:SetPoint(
-        "CENTER",
-        UIParent,
-        "CENTER",
-        SUPConfig.position.x or 0,
-        SUPConfig.position.y or 0
-    )
-    SUP.DebugPrint("2a. Frame positioned at:", SUPConfig.position.x, SUPConfig.position.y)
+
+    -- Set the initial position relative to the anchor frame
+    if SUP.anchorFrame then
+        frame:ClearAllPoints()
+        frame:SetPoint("CENTER", SUP.anchorFrame, "CENTER", 0, 0)
+        SUP.DebugPrint("2a. Frame positioned relative to anchor frame")
+    else
+        -- Fallback to center if anchor frame doesn't exist
+        frame:ClearAllPoints()
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        SUP.DebugPrint("2a. Frame positioned at center (no anchor frame)")
+    end
 
     SUP.DebugPrint("3. Creating icon")
     -- Create icon texture (only if showIcon is enabled)
@@ -50,6 +55,7 @@ function SUP.CreateNotificationFrame()
         text:SetPoint("LEFT", icon, "RIGHT", 5, 0)
     else
         text:SetPoint("CENTER", frame, "CENTER")
+        SUP.DebugPrint("4a. Text positioned CENTER of frame")
     end
     icon:SetShown(SUPConfig.showIcon)
 
@@ -62,15 +68,7 @@ function SUP.CreateNotificationFrame()
     local height = SUPConfig.fontSize * 2
     frame:SetSize(totalWidth, height)
 
-    -- Adjust frame position
-    frame:ClearAllPoints()
-    frame:SetPoint(
-        SUPConfig.position.point or "CENTER",
-        UIParent,
-        SUPConfig.position.relativePoint or "CENTER",
-        SUPConfig.position.x or 0,
-        SUPConfig.position.y or 0
-    )
+    -- No need to adjust position again since we already set it relative to anchor frame
 
     SUP.DebugPrint("5. Setting up animation")
     -- Create animation group
@@ -131,15 +129,6 @@ function SUP.ShowNotification(skillName, newLevel)
     SUP.DebugPrint("A. Creating notification frame")
     local frame = SUP.CreateNotificationFrame()
 
-    SUP.DebugPrint("B. Setting frame position")
-    frame:SetPoint(
-        SUPConfig.position.point or "CENTER",
-        UIParent,
-        SUPConfig.position.relativePoint or "CENTER",
-        SUPConfig.position.x,
-        SUPConfig.position.y
-    )
-
     SUP.DebugPrint("C. Adding to active notifications")
     table.insert(SUP.activeNotifications, frame)
 
@@ -154,6 +143,13 @@ function SUP.ShowNotification(skillName, newLevel)
     local totalWidth = SUP.CalculateNotificationWidth(SUPConfig.fontSize, frame.text, SUPConfig.showIcon)
     local height = SUPConfig.fontSize * 2
     frame:SetSize(totalWidth, height)
+
+    -- Ensure position is set relative to anchor frame after size calculation
+    if SUP.anchorFrame then
+        frame:ClearAllPoints()
+        frame:SetPoint("CENTER", SUP.anchorFrame, "CENTER", 0, 0)
+        SUP.DebugPrint("Position updated relative to anchor frame")
+    end
 
     -- Show/hide icon after setting text
     if SUPConfig.showIcon then

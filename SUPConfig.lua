@@ -17,9 +17,6 @@ function SUP.CreateConfigFrame()
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
-    -- Declare anchorFrame at the top level of the function
-    local anchorFrame = nil
-
     -- Initialize font slider
     frame.settingsContainer.FontSlider:SetValue(SUPConfig.fontSize)
     frame.settingsContainer.FontSlider:SetScript("OnValueChanged", function(self, value)
@@ -34,15 +31,15 @@ function SUP.CreateConfigFrame()
         end
 
         -- Update anchor frame if it exists and is shown
-        if anchorFrame and anchorFrame:IsShown() then
-            for _, region in ipairs({ anchorFrame:GetRegions() }) do
+        if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
+            for _, region in ipairs({ SUP.anchorFrame:GetRegions() }) do
                 if region.GetObjectType and region:GetObjectType() == "FontString" then
                     local fontPath = region:GetFont()
                     region:SetFont(fontPath, value)
 
                     local width = SUP.CalculateNotificationWidth(value, region, false) * 1.2
                     local height = value * 2.5
-                    anchorFrame:SetSize(width, height)
+                    SUP.anchorFrame:SetSize(width, height)
                     break
                 end
             end
@@ -98,18 +95,18 @@ function SUP.CreateConfigFrame()
 
         SUP.DebugPrint("Font Size:", fontSize, "Calculated Height:", height)
 
-        if not anchorFrame then
-            anchorFrame = SUP.CreateAnchorFrame(positionButton)
+        if not SUP.anchorFrame then
+            SUP.anchorFrame = SUP.CreateAnchorFrame(positionButton)
         end
 
         -- Update size and font dynamically
-        local width = SUP.CalculateNotificationWidth(fontSize, anchorFrame.text, false) * 1.2
-        anchorFrame:SetSize(width, height)
-        anchorFrame.text:SetFont(anchorFrame.text:GetFont(), fontSize)
+        local width = SUP.CalculateNotificationWidth(fontSize, SUP.anchorFrame.text, false) * 1.2
+        SUP.anchorFrame:SetSize(width, height)
+        SUP.anchorFrame.text:SetFont(SUP.anchorFrame.text:GetFont(), fontSize)
 
-        SUP.DebugPrint("Frame size updated:", "Width:", width, "Height:", height, "Visible:", anchorFrame:IsShown())
+        SUP.DebugPrint("Frame size updated:", "Width:", width, "Height:", height, "Visible:", SUP.anchorFrame:IsShown())
 
-        anchorFrame:ToggleVisibility()
+        SUP.anchorFrame:ToggleVisibility()
     end)
 
     -- Set version text

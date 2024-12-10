@@ -47,8 +47,12 @@ SUP.frame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" and ... == addonName then
         print("SUP: Loaded successfully! Use /sup to open the configuration window.")
         RegisterSlashCommands()
-        SUP.CreateConfigFrame() -- debug
-        SUP.configFrame:Show()  -- debug
+        -- Create the anchor frame immediately on load
+        if not SUP.anchorFrame then
+            SUP.anchorFrame = SUP.CreateAnchorFrame()
+        end
+        SUP.CreateConfigFrame()
+        SUP.configFrame:Show()
         SUP.SkillTracker.Initialize()
     elseif event == "SKILL_LINES_CHANGED" then
         SUP.SkillTracker.CheckForUpdates()

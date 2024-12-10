@@ -3,7 +3,9 @@ local CreateFrame = CreateFrame
 local UIParent = UIParent
 
 function SUP.CreateAnchorFrame(positionButton)
-    local anchorFrame = CreateFrame("Frame", "SUPAnchorFrame", UIParent, "BackdropTemplate")
+    -- Store the anchor frame globally in SUP
+    SUP.anchorFrame = CreateFrame("Frame", "SUPAnchorFrame", UIParent, "BackdropTemplate")
+    local anchorFrame = SUP.anchorFrame
     anchorFrame:Hide()
 
     -- Set backdrop
@@ -61,11 +63,15 @@ function SUP.CreateAnchorFrame(positionButton)
         if self:IsShown() then
             SUP.DebugPrint("Hiding frame")
             self:Hide()
-            positionButton:SetText("Edit Position")
+            if positionButton then
+                positionButton:SetText("Edit Position")
+            end
         else
             SUP.DebugPrint("Showing frame")
             self:Show()
-            positionButton:SetText("Save Position")
+            if positionButton then
+                positionButton:SetText("Save Position")
+            end
         end
         SUP.DebugPrint("After toggle - IsShown:", self:IsShown())
     end
