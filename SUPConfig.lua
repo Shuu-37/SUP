@@ -6,9 +6,23 @@ local string = string
 local table = table
 
 function SUP.CreateConfigFrame()
+    SUP.DebugPrint("Starting config frame creation...")
+
     -- Create main config frame
     local frame = CreateFrame("Frame", "SUPConfigFrame", UIParent, "SUPConfigFrameTemplate")
+    if not frame then
+        SUP.DebugPrint("Failed to create config frame!")
+        return
+    end
+    SUP.DebugPrint("Config frame created successfully")
+
     SUP.configFrame = frame
+
+    -- Set frame properties
+    frame:SetFrameStrata("DIALOG")
+    frame:ClearAllPoints()
+    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    frame:Show()
 
     -- Make frame movable
     frame:SetMovable(true)
