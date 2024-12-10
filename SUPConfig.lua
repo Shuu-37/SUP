@@ -85,11 +85,15 @@ function SUP.CreateConfigFrame()
 
     -- Setup checkbox scripts
     frame.settingsContainer.checkboxContainer.iconCheckbox:SetScript("OnClick", function(self)
-        SUPConfig.showIcon = self:GetChecked()
+        local isChecked = self:GetChecked()
+        SUPConfig.showIcon = isChecked
+        SUP.DebugPrint("Icon checkbox clicked. New state:", isChecked)
+        SUP.DebugPrint("SUPConfig.showIcon value:", SUPConfig.showIcon)
     end)
 
     frame.settingsContainer.checkboxContainer.soundCheckbox:SetScript("OnClick", function(self)
         SUPConfig.playSound = self:GetChecked()
+        SUP.DebugPrint("Sound checkbox clicked. New state:", SUPConfig.playSound)
     end)
 
     -- Setup test button
@@ -107,10 +111,9 @@ function SUP.CreateConfigFrame()
         local fontSize = SUPConfig.fontSize
         local height = fontSize * 2.5
 
-        SUP.DebugPrint("Font Size:", fontSize, "Calculated Height:", height)
-
         if not SUP.anchorFrame then
-            SUP.anchorFrame = SUP.CreateAnchorFrame(positionButton)
+            SUP.positionButton = positionButton
+            SUP.anchorFrame = SUP.CreateAnchorFrame()
         end
 
         -- Update size and font dynamically
@@ -118,9 +121,14 @@ function SUP.CreateConfigFrame()
         SUP.anchorFrame:SetSize(width, height)
         SUP.anchorFrame.text:SetFont(SUP.anchorFrame.text:GetFont(), fontSize)
 
-        SUP.DebugPrint("Frame size updated:", "Width:", width, "Height:", height, "Visible:", SUP.anchorFrame:IsShown())
-
-        SUP.anchorFrame:ToggleVisibility()
+        -- Show the anchor frame and update button text immediately
+        if not SUP.anchorFrame:IsShown() then
+            SUP.anchorFrame:Show()
+            positionButton:SetText("Save Position")
+        else
+            SUP.anchorFrame:Hide()
+            positionButton:SetText("Edit Position")
+        end
     end)
 
     -- Set version text

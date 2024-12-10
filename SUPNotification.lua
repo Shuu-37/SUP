@@ -8,13 +8,10 @@ local table = table
 local string = string
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
-local SUPConfig = SUPConfig
 
 function SUP.CalculateNotificationWidth(fontSize, text, showIcon)
-    -- Get text width only if there's actual text content
     local textWidth = text:GetText() and text:GetStringWidth() or 0
-    local iconWidth = showIcon and (fontSize * 1.7 + 5) or 0 -- Icon width + padding if shown
-    -- Ensure minimum width when text is empty
+    local iconWidth = showIcon and (fontSize * 1.7 + 5) or 0
     return math.max(textWidth + iconWidth, 50)
 end
 
@@ -41,31 +38,26 @@ function SUP.CreateNotificationFrame()
     end
 
     SUP.DebugPrint("3. Creating icon")
-    -- Create icon texture (only if showIcon is enabled)
+    -- Create icon texture
     local icon = frame:CreateTexture(nil, "OVERLAY")
-    local iconSize = SUPConfig.fontSize * 1.7
+    local iconSize = _G.SUPConfig.fontSize * 1.7
     icon:SetSize(iconSize, iconSize)
-    icon:SetPoint("LEFT", frame, "CENTER", -120, 0)
+    icon:SetPoint("LEFT", frame, "LEFT", 5, 0)
+    icon:Hide() -- Always hide initially
     frame.icon = icon
 
     SUP.DebugPrint("4. Creating text")
-    -- Create text
+    -- Create text with initial center position
     local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    if SUPConfig.showIcon then
-        text:SetPoint("LEFT", icon, "RIGHT", 5, 0)
-    else
-        text:SetPoint("CENTER", frame, "CENTER")
-        SUP.DebugPrint("4a. Text positioned CENTER of frame")
-    end
-    icon:SetShown(SUPConfig.showIcon)
+    text:SetPoint("CENTER", frame, "CENTER")
+    frame.text = text
 
     local fontPath, fontSize = text:GetFont()
-    text:SetFont(fontPath or "Fonts/FRIZQT__.TTF", SUPConfig.fontSize)
-    frame.text = text
+    text:SetFont(fontPath or "Fonts/FRIZQT__.TTF", _G.SUPConfig.fontSize)
 
     -- Calculate total width and adjust frame size
     local totalWidth = 250 -- Default width until text is set
-    local height = SUPConfig.fontSize * 2
+    local height = _G.SUPConfig.fontSize * 2
     frame:SetSize(totalWidth, height)
 
     -- No need to adjust position again since we already set it relative to anchor frame
@@ -75,7 +67,7 @@ function SUP.CreateNotificationFrame()
     frame.animGroup = frame:CreateAnimationGroup()
     frame.animGroup:SetToFinalAlpha(true)
 
-    local totalDuration = SUPConfig.duration or 1.5
+    local totalDuration = _G.SUPConfig.duration or 1.5
     local fadeInDuration = totalDuration * 0.2  -- First 20% for fade in
     local visibleDuration = totalDuration * 0.6 -- Middle 60% for full visibility
     local fadeOutDuration = totalDuration * 0.2 -- Last 20% for fade out
@@ -133,36 +125,51 @@ function SUP.ShowNotification(skillName, newLevel)
     table.insert(SUP.activeNotifications, frame)
 
     SUP.DebugPrint("D. Setting icon and text")
-    -- Set default icon if none exists for this skill
-    local iconPath = SUP.skillIcons[skillName] or "Interface\\Icons\\INV_Misc_QuestionMark"
-
     -- Set the text first
     frame.text:SetText(string.format("|CFFFFFFFF%s|r increased to |CFFFFFFFF%d|r!", skillName, newLevel))
 
-    -- Now recalculate the frame size based on the actual text
-    local totalWidth = SUP.CalculateNotificationWidth(SUPConfig.fontSize, frame.text, SUPConfig.showIcon)
-    local height = SUPConfig.fontSize * 2
+    -- Calculate initial frame size based on text
+    local totalWidth = SUP.CalculateNotificationWidth(_G.SUPConfig.fontSize, frame.text, _G.SUPConfig.showIcon)
+    local height = _G.SUPConfig.fontSize * 2
     frame:SetSize(totalWidth, height)
 
-    -- Ensure position is set relative to anchor frame after size calculation
+    -- Position relative to anchor frame
     if SUP.anchorFrame then
         frame:ClearAllPoints()
         frame:SetPoint("CENTER", SUP.anchorFrame, "CENTER", 0, 0)
-        SUP.DebugPrint("Position updated relative to anchor frame")
     end
 
-    -- Show/hide icon after setting text
-    if SUPConfig.showIcon then
-        frame.icon:SetTexture(iconPath)
+    SUP.DebugPrint("Creating notification with showIcon:", _G.SUPConfig.showIcon)
+    if not _G.SUPConfig.showIcon then
+        SUP.DebugPrint("Icon should be hidden - Checking icon state:")
+        SUP.DebugPrint("Icon IsShown:", frame.icon:IsShown())
+        SUP.DebugPrint("Icon GetTexture:", frame.icon:GetTexture() and "has texture" or "no texture")
+    end
+
+    -- Handle icon and text positioning
+    if _G.SUPConfig.showIcon then
+        -- Only set texture and show icon if enabled
+        frame.icon:SetTexture(SUP.skillIcons[skillName] or "Interface\\Icons\\INV_Misc_QuestionMark")
+        frame.icon:ClearAllPoints()
+        frame.icon:SetPoint("LEFT", frame, "LEFT", 5, 0)
         frame.icon:Show()
+
+        frame.text:ClearAllPoints()
+        frame.text:SetPoint("LEFT", frame.icon, "RIGHT", 5, 0)
     else
         frame.icon:Hide()
+        frame.icon:SetTexture(nil)
+        frame.icon:ClearAllPoints()
+        frame.icon:SetSize(0, 0)
+
+        frame.text:ClearAllPoints()
+        frame.text:SetPoint("CENTER", frame, "CENTER")
     end
 
     frame:Show()
     frame.animGroup:Play()
 
-    if SUPConfig.playSound then
+    if _G.SUPConfig.playSound then
         PlaySound(6295, "Master")
     end
 end

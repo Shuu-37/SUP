@@ -63,15 +63,9 @@ function SUP.CreateAnchorFrame(positionButton)
         if self:IsShown() then
             SUP.DebugPrint("Hiding frame")
             self:Hide()
-            if positionButton then
-                positionButton:SetText("Edit Position")
-            end
         else
             SUP.DebugPrint("Showing frame")
             self:Show()
-            if positionButton then
-                positionButton:SetText("Save Position")
-            end
         end
         SUP.DebugPrint("After toggle - IsShown:", self:IsShown())
     end
