@@ -3,40 +3,59 @@
     <!-- Config Frame Template -->
     <Frame name="SUPConfigFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true"
         movable="true" inherits="TooltipBackdropTemplate" virtual="true">
-        <Size x="400" y="200" />
-        <Anchors>
-            <Anchor point="CENTER" />
-        </Anchors>
+        <Size x="408" y="250" />
 
         <Layers>
             <Layer level="OVERLAY">
                 <FontString name="$parentTitle" inherits="GameFontNormalLarge" text="SkillUp Plus">
                     <Color r="1" g="0.82" b="0" />
                     <Anchors>
-                        <Anchor point="TOP" x="0" y="-15" />
+                        <Anchor point="TOPLEFT" relativeTo="$parent" x="20" y="-15" />
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentVersion" inherits="GameFontNormalSmall">
+                    <Color r="0.5" g="0.5" b="0.5" />
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTitle" x="4"
+                            y="-2" />
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
 
         <Frames>
-            <!-- Container for Slider and Position Button -->
-            <Frame parentKey="controlsContainer">
-                <Size x="340" y="30" />
+            <!-- Settings Container -->
+            <Frame parentKey="settingsContainer" inherits="BackdropTemplate">
+                <Size x="380" y="200" />
                 <Anchors>
-                    <Anchor point="TOP" relativePoint="TOP" x="0" y="-50" />
+                    <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="-30" />
                 </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        print("SUP: Main Config Frame Loading...");
+                        --self:SetBackdrop({
+                        --bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+                        --edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                        --tile = true,
+                        --tileSize = 16,
+                        --edgeSize = 16,
+                        --insets = { left = 4, right = 4, top = 4, bottom = 4 }
+                        --});
+                        --self:SetBackdropColor(1, 0, 0, 0.0);
+                    </OnLoad>
+                </Scripts>
 
-                <!-- Font Size Slider -->
                 <Frames>
+                    <!-- Font Size Slider -->
                     <Slider name="$parentFontSlider" inherits="OptionsSliderTemplate"
                         parentKey="FontSlider">
                         <Size x="180" y="20" />
                         <Anchors>
-                            <Anchor point="LEFT" x="0" y="0" />
+                            <Anchor point="TOPLEFT" relativeKey="$parent" x="10" y="-24" />
                         </Anchors>
                         <Scripts>
                             <OnLoad>
+                                print("SUP: Font Slider Loaded");
                                 self:SetMinMaxValues(8, 32)
                                 self:SetValueStep(1)
                                 _G[self:GetName().."Low"]:SetText("8")
@@ -52,91 +71,190 @@
                         <Size x="140" y="22" />
                         <Anchors>
                             <Anchor point="LEFT" relativeKey="$parent.FontSlider"
-                                relativePoint="RIGHT" x="20" y="0" />
+                                relativePoint="RIGHT"
+                                x="20" y="0" />
+                        </Anchors>
+                    </Button>
+
+                    <!-- Duration Slider -->
+                    <Slider name="$parentDurationSlider" inherits="OptionsSliderTemplate"
+                        parentKey="DurationSlider">
+                        <Size x="180" y="20" />
+                        <Anchors>
+                            <Anchor point="TOP" relativeKey="$parent.FontSlider"
+                                relativePoint="BOTTOM"
+                                x="0" y="-20" />
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                print("SUP: Duration Slider Loaded");
+                                self:SetMinMaxValues(1.0, 8.0)
+                                self:SetValueStep(0.1)
+                                _G[self:GetName().."Low"]:SetText("1.0s")
+                                _G[self:GetName().."High"]:SetText("8.0s")
+                                _G[self:GetName().."Text"]:SetText("Duration")
+                            </OnLoad>
+                        </Scripts>
+                    </Slider>
+
+                    <!-- Checkbox Container -->
+                    <Frame parentKey="checkboxContainer">
+                        <Size x="340" y="40" />
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.DurationSlider"
+                                relativePoint="BOTTOMLEFT" x="0" y="-20" />
+                        </Anchors>
+
+                        <Frames>
+                            <!-- Icon Checkbox -->
+                            <CheckButton name="$parentIconCheckbox" inherits="UICheckButtonTemplate"
+                                parentKey="iconCheckbox">
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeKey="$parent.checkboxContainer"
+                                        relativePoint="LEFT" x="-5" y="0" />
+                                </Anchors>
+                                <Layers>
+                                    <Layer level="ARTWORK">
+                                        <FontString inherits="GameFontNormal" text="Show Icon">
+                                            <Anchors>
+                                                <Anchor point="LEFT" relativePoint="RIGHT" x="2"
+                                                    y="0" />
+                                            </Anchors>
+                                        </FontString>
+                                    </Layer>
+                                </Layers>
+                            </CheckButton>
+
+                            <!-- Sound Checkbox -->
+                            <CheckButton name="$parentSoundCheckbox"
+                                inherits="UICheckButtonTemplate"
+                                parentKey="soundCheckbox">
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeKey="$parent.iconCheckbox"
+                                        relativePoint="RIGHT" x="90" y="0" />
+                                </Anchors>
+                                <Layers>
+                                    <Layer level="ARTWORK">
+                                        <FontString inherits="GameFontNormal" text="Play Sound">
+                                            <Anchors>
+                                                <Anchor point="LEFT" relativePoint="RIGHT" x="2"
+                                                    y="0" />
+                                            </Anchors>
+                                        </FontString>
+                                    </Layer>
+                                </Layers>
+                            </CheckButton>
+                        </Frames>
+                    </Frame>
+
+                    <!-- Test Button -->
+                    <Button name="$parentTestButton" inherits="UIPanelButtonTemplate"
+                        parentKey="TestButton" text="Test Notification">
+                        <Size x="140" y="32" />
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.checkboxContainer"
+                                relativePoint="BOTTOMLEFT" x="0" y="-16" />
                         </Anchors>
                     </Button>
                 </Frames>
             </Frame>
 
-            <!-- Container for Checkboxes -->
-            <Frame parentKey="checkboxContainer">
-                <Size x="340" y="40" />
-                <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.controlsContainer"
-                        relativePoint="BOTTOM" x="0" y="20" />
-                </Anchors>
-
-                <Frames>
-                    <!-- Icon Checkbox -->
-                    <CheckButton name="$parentIconCheckbox" inherits="UICheckButtonTemplate"
-                        parentKey="iconCheckbox">
-                        <Anchors>
-                            <Anchor point="LEFT" x="-10" y="-30" />
-                        </Anchors>
-                        <Layers>
-                            <Layer level="ARTWORK">
-                                <FontString inherits="GameFontNormal" text="Show Icon">
-                                    <Anchors>
-                                        <Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0" />
-                                    </Anchors>
-                                </FontString>
-                            </Layer>
-                        </Layers>
-                    </CheckButton>
-
-                    <!-- Sound Checkbox -->
-                    <CheckButton name="$parentSoundCheckbox" inherits="UICheckButtonTemplate"
-                        parentKey="soundCheckbox">
-                        <Anchors>
-                            <Anchor point="LEFT" relativeKey="$parent.iconCheckbox"
-                                relativePoint="RIGHT" x="90" y="0" />
-                        </Anchors>
-                        <Layers>
-                            <Layer level="ARTWORK">
-                                <FontString inherits="GameFontNormal" text="Play Sound">
-                                    <Anchors>
-                                        <Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0" />
-                                    </Anchors>
-                                </FontString>
-                            </Layer>
-                        </Layers>
-                    </CheckButton>
-
-                    <!-- Debug Checkbox -->
-                    <CheckButton name="$parentDebugCheckbox" inherits="UICheckButtonTemplate"
-                        parentKey="debugCheckbox">
-                        <Anchors>
-                            <Anchor point="LEFT" relativeKey="$parent.soundCheckbox"
-                                relativePoint="RIGHT" x="90" y="0" />
-                        </Anchors>
-                        <Layers>
-                            <Layer level="ARTWORK">
-                                <FontString inherits="GameFontNormal" text="Debug Mode">
-                                    <Anchors>
-                                        <Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0" />
-                                    </Anchors>
-                                </FontString>
-                            </Layer>
-                        </Layers>
-                    </CheckButton>
-                </Frames>
-            </Frame>
-
-            <!-- Test Button -->
-            <Button name="$parentTestButton" inherits="UIPanelButtonTemplate"
-                text="Test Notification">
-                <Size x="140" y="32" />
-                <Anchors>
-                    <Anchor point="BOTTOM" x="0" y="20" />
-                </Anchors>
-            </Button>
-
             <!-- Close Button -->
-            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+            <Button name="$parentCloseButton" inherits="UIPanelButtonTemplate">
+                <Size x="32" y="22" />
                 <Anchors>
                     <Anchor point="TOPRIGHT" x="-2" y="-2" />
                 </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture file="Interface\Buttons\UI-StopButton" parentKey="icon">
+                            <Size x="14" y="14" />
+                            <Anchors>
+                                <Anchor point="CENTER" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        print("SUP: Close Button Loaded");
+                    </OnLoad>
+                    <OnClick>
+                        self:GetParent():Hide()
+                    </OnClick>
+                </Scripts>
             </Button>
+
+            <!-- Debug Button -->
+            <Button name="$parentDebugButton" parentKey="debugButton"
+                inherits="UIPanelButtonTemplate">
+                <Size x="32" y="22" />
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT" x="2"
+                        y="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture file="Interface\Buttons\UI-GuildButton-PublicNote-Up"
+                            parentKey="icon">
+                            <Size x="14" y="14" />
+                            <Anchors>
+                                <Anchor point="CENTER" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        print("SUP: Debug Button Loading...");
+                        self.active = SUPConfig.debugMode;
+                        -- Set initial state
+                        if self.active then
+                        self:SetButtonState("PUSHED", true);
+                        end
+                    </OnLoad>
+                    <OnClick>
+                        self.active = not self.active;
+                        SUPConfig.debugMode = self.active;
+                        if self.active then
+                        self:SetButtonState("PUSHED", true);
+                        print("|cFF00FF00[SUP]|r Debug mode enabled");
+                        else
+                        self:SetButtonState("NORMAL");
+                        print("|cFF00FF00[SUP]|r Debug mode disabled");
+                        end
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <!-- Reload Button -->
+            <Button name="$parentReloadButton" parentKey="reloadButton"
+                inherits="UIPanelButtonTemplate">
+                <Size x="32" y="22" />
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="$parentDebugButton" relativePoint="LEFT" x="2"
+                        y="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture file="Interface\Buttons\UI-RefreshButton" parentKey="icon">
+                            <Size x="14" y="14" />
+                            <Anchors>
+                                <Anchor point="CENTER" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnLoad>
+                        print("SUP: Reload Button Loading...");
+                    </OnLoad>
+                    <OnClick>
+                        ReloadUI()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
         </Frames>
     </Frame>
 </Ui>

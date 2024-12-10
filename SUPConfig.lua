@@ -21,9 +21,10 @@ function SUP.CreateConfigFrame()
     local anchorFrame = nil
 
     -- Initialize font slider
-    frame.controlsContainer.FontSlider:SetValue(SUPConfig.fontSize)
-    frame.controlsContainer.FontSlider:SetScript("OnValueChanged", function(self, value)
+    frame.settingsContainer.FontSlider:SetValue(SUPConfig.fontSize)
+    frame.settingsContainer.FontSlider:SetScript("OnValueChanged", function(self, value)
         SUPConfig.fontSize = value
+        _G[self:GetName() .. "Text"]:SetText(string.format("Font Size (%d)", value))
         SUP.DebugPrint("Font size set to:", value)
         -- Update any active notifications
         for _, notification in ipairs(SUP.activeNotifications) do
@@ -48,26 +49,40 @@ function SUP.CreateConfigFrame()
         end
     end)
 
+    -- Set initial text values
+    _G[frame.settingsContainer.FontSlider:GetName() .. "Text"]:SetText(string.format("Font Size (%d)", SUPConfig
+        .fontSize))
+    if frame.settingsContainer.DurationSlider then
+        _G[frame.settingsContainer.DurationSlider:GetName() .. "Text"]:SetText(string.format("Duration (%.1fs)",
+            SUPConfig.duration))
+    end
+
+    -- Initialize duration slider
+    if frame.settingsContainer.DurationSlider then
+        local initialDuration = SUPConfig.duration or 1.5
+        frame.settingsContainer.DurationSlider:SetValue(initialDuration)
+        frame.settingsContainer.DurationSlider:SetScript("OnValueChanged", function(self, value)
+            SUPConfig.duration = value
+            _G[self:GetName() .. "Text"]:SetText(string.format("Duration (%.1fs)", value))
+            SUP.DebugPrint("Duration set to:", value)
+        end)
+    end
+
     -- Initialize checkboxes
-    frame.checkboxContainer.iconCheckbox:SetChecked(SUPConfig.showIcon)
-    frame.checkboxContainer.soundCheckbox:SetChecked(SUPConfig.playSound)
-    frame.checkboxContainer.debugCheckbox:SetChecked(SUPConfig.debugMode)
+    frame.settingsContainer.checkboxContainer.iconCheckbox:SetChecked(SUPConfig.showIcon)
+    frame.settingsContainer.checkboxContainer.soundCheckbox:SetChecked(SUPConfig.playSound)
 
     -- Setup checkbox scripts
-    frame.checkboxContainer.iconCheckbox:SetScript("OnClick", function(self)
+    frame.settingsContainer.checkboxContainer.iconCheckbox:SetScript("OnClick", function(self)
         SUPConfig.showIcon = self:GetChecked()
     end)
 
-    frame.checkboxContainer.soundCheckbox:SetScript("OnClick", function(self)
+    frame.settingsContainer.checkboxContainer.soundCheckbox:SetScript("OnClick", function(self)
         SUPConfig.playSound = self:GetChecked()
     end)
 
-    frame.checkboxContainer.debugCheckbox:SetScript("OnClick", function(self)
-        SUPConfig.debugMode = self:GetChecked()
-    end)
-
     -- Setup test button
-    local testButton = _G[frame:GetName() .. "TestButton"]
+    local testButton = frame.settingsContainer.TestButton
     testButton:SetScript("OnClick", function()
         local randomSkill = SUP.trackableSkills[math.random(#SUP.trackableSkills)]
         local randomLevel = math.random(1, 300)
@@ -75,7 +90,7 @@ function SUP.CreateConfigFrame()
     end)
 
     -- Setup position button and anchor frame
-    local positionButton = frame.controlsContainer.positionButton
+    local positionButton = frame.settingsContainer.positionButton
 
     positionButton:SetScript("OnClick", function()
         local fontSize = SUPConfig.fontSize
@@ -96,4 +111,14 @@ function SUP.CreateConfigFrame()
 
         anchorFrame:ToggleVisibility()
     end)
+
+    -- Set version text
+    local versionText = _G[frame:GetName() .. "Version"]
+    if versionText then
+        local version = GetAddOnMetadata(addonName, "Version")
+        versionText:SetText("v" .. version)
+        SUP.DebugPrint("Version text set to:", version)
+    else
+        SUP.DebugPrint("Could not find version text element")
+    end
 end
