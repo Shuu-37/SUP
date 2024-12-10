@@ -71,8 +71,8 @@ SUP.frame:SetScript("OnEvent", function(self, event, ...)
         print("SUP: Loaded successfully! Use /sup to open the configuration window.")
         RegisterSlashCommands()
         -- Creates the configFrame and shows it immediately on load
-        SUP.CreateConfigFrame()
-        SUP.configFrame:Show()
+        -- SUP.CreateConfigFrame()
+        -- SUP.configFrame:Show()
         -- Create the anchor frame immediately on load
         if not SUP.anchorFrame then
             SUP.anchorFrame = SUP.CreateAnchorFrame()
