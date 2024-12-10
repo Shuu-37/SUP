@@ -4,6 +4,12 @@ local UIParent = UIParent
 local math = math
 local string = string
 local table = table
+local UIDropDownMenu_SetWidth = UIDropDownMenu_SetWidth
+local UIDropDownMenu_SetText = UIDropDownMenu_SetText
+local UIDropDownMenu_Initialize = UIDropDownMenu_Initialize
+local UIDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo
+local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
+local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
 
 function SUP.CreateConfigFrame()
     SUP.DebugPrint("Starting config frame creation...")
@@ -79,6 +85,17 @@ function SUP.CreateConfigFrame()
         end)
     end
 
+    -- Initialize volume slider
+    if frame.settingsContainer.VolumeSlider then
+        local initialVolume = SUPConfig.soundVolume or 100
+        frame.settingsContainer.VolumeSlider:SetValue(initialVolume)
+        frame.settingsContainer.VolumeSlider:SetScript("OnValueChanged", function(self, value)
+            SUPConfig.soundVolume = value
+            _G[self:GetName() .. "Text"]:SetText(string.format("Sound Volume (%d%%)", value))
+            SUP.DebugPrint("Sound volume set to:", value)
+        end)
+    end
+
     -- Initialize checkboxes
     frame.settingsContainer.checkboxContainer.iconCheckbox:SetChecked(SUPConfig.showIcon)
     frame.settingsContainer.checkboxContainer.soundCheckbox:SetChecked(SUPConfig.playSound)
@@ -139,5 +156,31 @@ function SUP.CreateConfigFrame()
         SUP.DebugPrint("Version text set to:", version)
     else
         SUP.DebugPrint("Could not find version text element")
+    end
+
+    -- Initialize sound dropdown
+    local soundDropdown = frame.settingsContainer.checkboxContainer.soundDropdown
+    if soundDropdown then
+        UIDropDownMenu_SetWidth(soundDropdown, 120)
+        UIDropDownMenu_Initialize(soundDropdown, function(self, level)
+            local info = UIDropDownMenu_CreateInfo()
+            for soundName in pairs(SUP.SOUND_OPTIONS) do
+                info.text = soundName
+                info.value = soundName
+                info.func = function(self)
+                    _G.SUPConfig.sound = self.value
+                    UIDropDownMenu_SetSelectedValue(soundDropdown, self.value)
+                    -- Play sound preview
+                    if SUP.SOUND_OPTIONS[self.value] then
+                        PlaySound(SUP.SOUND_OPTIONS[self.value], "Master")
+                    end
+                end
+                info.checked = (_G.SUPConfig.sound == soundName)
+                UIDropDownMenu_AddButton(info)
+            end
+        end)
+        UIDropDownMenu_SetSelectedValue(soundDropdown, _G.SUPConfig.sound or "Skill Up")
+    else
+        SUP.DebugPrint("Sound dropdown not found")
     end
 end

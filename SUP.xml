@@ -144,6 +144,15 @@
                                     </Layer>
                                 </Layers>
                             </CheckButton>
+
+                            <!-- Sound Dropdown -->
+                            <Frame name="$parentSoundDropdown" inherits="UIDropDownMenuTemplate"
+                                parentKey="soundDropdown">
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeKey="$parent.soundCheckbox"
+                                        relativePoint="RIGHT" x="60" y="0" />
+                                </Anchors>
+                            </Frame>
                         </Frames>
                     </Frame>
 

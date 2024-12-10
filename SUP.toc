@@ -7,6 +7,7 @@
 
 SUP.xml
 SUPCore.lua
+SUPSounds.lua
 SUPConfig.lua
 SUPAnchorFrame.lua
 SUPSkillTracker.lua

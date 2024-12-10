@@ -74,7 +74,7 @@ function SUP.CreateNotificationFrame()
 
     -- Add translation (runs entire duration)
     local translate = frame.animGroup:CreateAnimation("Translation")
-    translate:SetOffset(0, 40)
+    translate:SetOffset(0, 60)
     translate:SetDuration(totalDuration)
     translate:SetSmoothing("OUT")
     translate:SetOrder(1)
@@ -166,10 +166,16 @@ function SUP.ShowNotification(skillName, newLevel)
         frame.text:SetPoint("CENTER", frame, "CENTER")
     end
 
+    -- Play sound first, before any visual effects
+    SUP.DebugPrint("Sound check - playSound enabled:", _G.SUPConfig.playSound)
+    if _G.SUPConfig.playSound then
+        local soundID = SUP.SOUND_OPTIONS[_G.SUPConfig.sound]
+        SUP.DebugPrint("Sound check - selected sound:", _G.SUPConfig.sound, "ID:", soundID)
+        if soundID then
+            PlaySound(soundID, "Master", false)
+        end
+    end
+
     frame:Show()
     frame.animGroup:Play()
-
-    if _G.SUPConfig.playSound then
-        PlaySound(6295, "Master")
-    end
 end
