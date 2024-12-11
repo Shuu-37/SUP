@@ -1,12 +1,9 @@
 local addonName, SUP = ...
----@type function
-local CreateFrame = CreateFrame
----@type Frame|nil
-local UIParent = UIParent
+local L = SUP.Locals
 
 function SUP.CreateAnchorFrame(positionButton)
     -- Store the anchor frame globally in SUP
-    SUP.anchorFrame = CreateFrame("Frame", "SUPAnchorFrame", UIParent, "BackdropTemplate")
+    SUP.anchorFrame = L.CreateFrame("Frame", "SUPAnchorFrame", UIParent, "BackdropTemplate")
     local anchorFrame = SUP.anchorFrame
     anchorFrame:Hide()
 

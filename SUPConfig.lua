@@ -1,32 +1,11 @@
----@type function
-local CreateFrame = CreateFrame
----@type Frame|nil
-local UIParent = UIParent
-local math = math
-local string = string
-local table = table
----@type function
-local UIDropDownMenu_SetWidth = UIDropDownMenu_SetWidth
----@type function
-local UIDropDownMenu_SetText = UIDropDownMenu_SetText
----@type function
-local UIDropDownMenu_Initialize = UIDropDownMenu_Initialize
----@type function
-local UIDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo
----@type function
-local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
----@type function
-local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
----@type function
-local GetAddOnMetadata = (rawget(_G, "C_AddOns") and _G.C_AddOns.GetAddOnMetadata) or rawget(_G, "GetAddOnMetadata")
-
 local addonName, SUP = ...
+local L = SUP.Locals
 
 function SUP.CreateConfigFrame()
     SUP.DebugPrint("Starting config frame creation...")
 
     -- Create main config frame
-    local frame = CreateFrame("Frame", "SUPConfigFrame", UIParent, "SUPConfigFrameTemplate")
+    local frame = L.CreateFrame("Frame", "SUPConfigFrame", UIParent, "SUPConfigFrameTemplate")
     if not frame then
         SUP.DebugPrint("Failed to create config frame!")
         return
@@ -52,7 +31,7 @@ function SUP.CreateConfigFrame()
     frame.settingsContainer.FontSlider:SetValue(SUPConfig.fontSize)
     frame.settingsContainer.FontSlider:SetScript("OnValueChanged", function(self, value)
         SUPConfig.fontSize = value
-        _G[self:GetName() .. "Text"]:SetText(string.format("Font Size (%d)", value))
+        self.Text:SetText(string.format("Font Size (%d)", value))
         SUP.DebugPrint("Font size set to:", value)
         -- Update any active notifications
         for _, notification in ipairs(SUP.activeNotifications) do
@@ -78,11 +57,9 @@ function SUP.CreateConfigFrame()
     end)
 
     -- Set initial text values
-    _G[frame.settingsContainer.FontSlider:GetName() .. "Text"]:SetText(string.format("Font Size (%d)", SUPConfig
-        .fontSize))
+    frame.settingsContainer.FontSlider.Text:SetText(string.format("Font Size (%d)", SUPConfig.fontSize))
     if frame.settingsContainer.DurationSlider then
-        _G[frame.settingsContainer.DurationSlider:GetName() .. "Text"]:SetText(string.format("Duration (%.1fs)",
-            SUPConfig.duration))
+        frame.settingsContainer.DurationSlider.Text:SetText(string.format("Duration (%.1fs)", SUPConfig.duration))
     end
 
     -- Initialize duration slider
@@ -91,19 +68,8 @@ function SUP.CreateConfigFrame()
         frame.settingsContainer.DurationSlider:SetValue(initialDuration)
         frame.settingsContainer.DurationSlider:SetScript("OnValueChanged", function(self, value)
             SUPConfig.duration = value
-            _G[self:GetName() .. "Text"]:SetText(string.format("Duration (%.1fs)", value))
+            self.Text:SetText(string.format("Duration (%.1fs)", value))
             SUP.DebugPrint("Duration set to:", value)
-        end)
-    end
-
-    -- Initialize volume slider
-    if frame.settingsContainer.VolumeSlider then
-        local initialVolume = SUPConfig.soundVolume or 100
-        frame.settingsContainer.VolumeSlider:SetValue(initialVolume)
-        frame.settingsContainer.VolumeSlider:SetScript("OnValueChanged", function(self, value)
-            SUPConfig.soundVolume = value
-            _G[self:GetName() .. "Text"]:SetText(string.format("Sound Volume (%d%%)", value))
-            SUP.DebugPrint("Sound volume set to:", value)
         end)
     end
 
@@ -162,7 +128,7 @@ function SUP.CreateConfigFrame()
     -- Set version text
     local versionText = _G[frame:GetName() .. "Version"]
     if versionText then
-        local version = GetAddOnMetadata(addonName, "Version")
+        local version = L.GetAddOnMetadata(addonName, "Version") or "Unknown"
         versionText:SetText("v" .. version)
         SUP.DebugPrint("Version text set to:", version)
     else
@@ -172,25 +138,25 @@ function SUP.CreateConfigFrame()
     -- Initialize sound dropdown
     local soundDropdown = frame.settingsContainer.checkboxContainer.soundDropdown
     if soundDropdown then
-        UIDropDownMenu_SetWidth(soundDropdown, 120)
-        UIDropDownMenu_Initialize(soundDropdown, function(self, level)
-            local info = UIDropDownMenu_CreateInfo()
+        L.UIDropDownMenu_SetWidth(soundDropdown, 120)
+        L.UIDropDownMenu_Initialize(soundDropdown, function(self, level)
+            local info = L.UIDropDownMenu_CreateInfo()
             for soundName in pairs(SUP.SOUND_OPTIONS) do
                 info.text = soundName
                 info.value = soundName
                 info.func = function(self)
                     _G.SUPConfig.sound = self.value
-                    UIDropDownMenu_SetSelectedValue(soundDropdown, self.value)
+                    L.UIDropDownMenu_SetSelectedValue(soundDropdown, self.value)
                     -- Play sound preview
                     if SUP.SOUND_OPTIONS[self.value] then
-                        PlaySound(SUP.SOUND_OPTIONS[self.value], "Master")
+                        L.PlaySound(SUP.SOUND_OPTIONS[self.value], "Master")
                     end
                 end
                 info.checked = (_G.SUPConfig.sound == soundName)
-                UIDropDownMenu_AddButton(info)
+                L.UIDropDownMenu_AddButton(info)
             end
         end)
-        UIDropDownMenu_SetSelectedValue(soundDropdown, _G.SUPConfig.sound or "Skill Up")
+        L.UIDropDownMenu_SetSelectedValue(soundDropdown, _G.SUPConfig.sound or "Skill Up")
     else
         SUP.DebugPrint("Sound dropdown not found")
     end

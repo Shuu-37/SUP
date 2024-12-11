@@ -1,10 +1,5 @@
--- Declare WoW API functions as globals
----@type function
-local GetSkillLineInfo = _G.GetSkillLineInfo
----@type function
-local GetNumSkillLines = _G.GetNumSkillLines
-
 local addonName, SUP = ...
+local L = SUP.Locals
 
 -- Initialize the skill tracker
 SUP.SkillTracker = {}
@@ -68,17 +63,17 @@ SUP.skillIcons = {
 
 function SUP.SkillTracker.GetProfessionLevel(index)
     if not index then return nil end
-    local name, isHeader, _, rank = GetSkillLineInfo(index)
+    local name, isHeader, _, rank = L.GetSkillLineInfo(index)
     if isHeader then return nil end
-    return name, rank, name -- Using name as skillLine since Classic doesn't have separate skillLine IDs
+    return name, rank, name
 end
 
 function SUP.SkillTracker.ScanSkills()
     local skillData = {}
 
     -- Scan all skill lines
-    for i = 1, GetNumSkillLines() do
-        local name, isHeader, _, rank = GetSkillLineInfo(i)
+    for i = 1, L.GetNumSkillLines() do
+        local name, isHeader, _, rank = L.GetSkillLineInfo(i)
         if not isHeader then
             for _, trackableSkill in ipairs(SUP.trackableSkills) do
                 if name and name == trackableSkill then

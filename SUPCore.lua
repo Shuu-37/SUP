@@ -1,19 +1,8 @@
----@type function
-local CreateFrame = CreateFrame
----@type function
-local print = print
----@type function
-local GetAddOnMetadata = (rawget(_G, "C_AddOns") and _G.C_AddOns.GetAddOnMetadata) or rawget(_G, "GetAddOnMetadata")
-
---- @type table<string, function>
-local SlashCmdList = SlashCmdList
---- @type table
-local _G = _G
-
 local addonName, SUP = ...
+local L = SUP.Locals
 
 -- Create the main addon frame for event handling
-SUP.frame = CreateFrame("Frame")
+SUP.frame = L.CreateFrame("Frame")
 
 -- Initialize saved variables with defaults if they don't exist
 SUPConfig = SUPConfig or {

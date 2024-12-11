@@ -1,4 +1,5 @@
 local addonName, SUP = ...
+local L = SUP.Locals
 
 -- Define sound options with Classic Era sound IDs
 SUP.SOUND_OPTIONS = {

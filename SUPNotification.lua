@@ -1,16 +1,10 @@
 local addonName, SUP = ...
+local L = SUP.Locals
+
+L.PlaySound = PlaySound
+
 SUP.activeNotifications = {}
 SUP.nextNotificationId = 1
-
----@type function
-local CreateFrame = CreateFrame
----@type Frame|nil
-local UIParent = UIParent
-local table = table
-local string = string
----@type function
-local PlaySound = PlaySound
-local SOUNDKIT = SOUNDKIT
 
 function SUP.CalculateNotificationWidth(fontSize, text, showIcon)
     local textWidth = text:GetText() and text:GetStringWidth() or 0
@@ -175,7 +169,7 @@ function SUP.ShowNotification(skillName, newLevel)
         local soundID = SUP.SOUND_OPTIONS[_G.SUPConfig.sound]
         SUP.DebugPrint("Sound check - selected sound:", _G.SUPConfig.sound, "ID:", soundID)
         if soundID then
-            PlaySound(soundID, "Master", false)
+            L.PlaySound(soundID, "Master", false)
         end
     end
 
