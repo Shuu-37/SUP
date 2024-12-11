@@ -2,10 +2,13 @@ local addonName, SUP = ...
 SUP.activeNotifications = {}
 SUP.nextNotificationId = 1
 
+---@type function
 local CreateFrame = CreateFrame
+---@type Frame|nil
 local UIParent = UIParent
 local table = table
 local string = string
+---@type function
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 

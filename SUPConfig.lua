@@ -1,15 +1,26 @@
-local addonName, SUP = ...
+---@type function
 local CreateFrame = CreateFrame
+---@type Frame|nil
 local UIParent = UIParent
 local math = math
 local string = string
 local table = table
+---@type function
 local UIDropDownMenu_SetWidth = UIDropDownMenu_SetWidth
+---@type function
 local UIDropDownMenu_SetText = UIDropDownMenu_SetText
+---@type function
 local UIDropDownMenu_Initialize = UIDropDownMenu_Initialize
+---@type function
 local UIDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo
+---@type function
 local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
+---@type function
 local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
+---@type function
+local GetAddOnMetadata = (rawget(_G, "C_AddOns") and _G.C_AddOns.GetAddOnMetadata) or rawget(_G, "GetAddOnMetadata")
+
+local addonName, SUP = ...
 
 function SUP.CreateConfigFrame()
     SUP.DebugPrint("Starting config frame creation...")

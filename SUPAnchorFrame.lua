@@ -1,5 +1,7 @@
 local addonName, SUP = ...
+---@type function
 local CreateFrame = CreateFrame
+---@type Frame|nil
 local UIParent = UIParent
 
 function SUP.CreateAnchorFrame(positionButton)

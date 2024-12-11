@@ -1,8 +1,8 @@
+---@type function
 local CreateFrame = CreateFrame
-local UIParent = UIParent
-local table = table
-local string = string
+---@type function
 local print = print
+---@type function
 local GetAddOnMetadata = (rawget(_G, "C_AddOns") and _G.C_AddOns.GetAddOnMetadata) or rawget(_G, "GetAddOnMetadata")
 
 --- @type table<string, function>

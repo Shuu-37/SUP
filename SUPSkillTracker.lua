@@ -1,3 +1,9 @@
+-- Declare WoW API functions as globals
+---@type function
+local GetSkillLineInfo = _G.GetSkillLineInfo
+---@type function
+local GetNumSkillLines = _G.GetNumSkillLines
+
 local addonName, SUP = ...
 
 -- Initialize the skill tracker
@@ -75,7 +81,7 @@ function SUP.SkillTracker.ScanSkills()
         local name, isHeader, _, rank = GetSkillLineInfo(i)
         if not isHeader then
             for _, trackableSkill in ipairs(SUP.trackableSkills) do
-                if name == trackableSkill then
+                if name and name == trackableSkill then
                     skillData[name] = { name = name, rank = rank }
                     break
                 end

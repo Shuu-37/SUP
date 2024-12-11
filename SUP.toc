@@ -6,6 +6,7 @@
 ## SavedVariables: SUPConfig
 
 SUP.xml
+SUPLocals.lua
 SUPCore.lua
 SUPSounds.lua
 SUPConfig.lua
