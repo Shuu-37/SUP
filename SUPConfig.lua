@@ -49,7 +49,7 @@ function SUP.CreateConfigFrame()
     -- Set initial text values
     frame.settingsContainer.FontSlider.Text:SetText(string.format("Font Size (%d)", SUPConfig.fontSize))
     if frame.settingsContainer.DurationSlider then
-        frame.settingsContainer.DurationSlider.Text:SetText(string.format("Duration (%.1fs)", SUPConfig.duration))
+        frame.settingsContainer.DurationSlider.Text:SetText(string.format("Duration (%.1fs)", SUPConfig.duration or 1.5))
     end
 
     -- Initialize duration slider
