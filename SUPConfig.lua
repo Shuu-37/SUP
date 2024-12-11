@@ -40,19 +40,9 @@ function SUP.CreateConfigFrame()
             notification.icon:SetSize(value * 1.7, value * 1.7)
         end
 
-        -- Update anchor frame if it exists and is shown
-        if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
-            for _, region in ipairs({ SUP.anchorFrame:GetRegions() }) do
-                if region.GetObjectType and region:GetObjectType() == "FontString" then
-                    local fontPath = region:GetFont()
-                    region:SetFont(fontPath, value)
-
-                    local width = SUP.CalculateNotificationWidth(value, region, false) * 1.2
-                    local height = value * 2.5
-                    SUP.anchorFrame:SetSize(width, height)
-                    break
-                end
-            end
+        -- Update anchor frame if it exists, regardless of visibility
+        if SUP.anchorFrame then
+            SUP.anchorFrame:UpdateFontSize(value)
         end
     end)
 
@@ -102,18 +92,13 @@ function SUP.CreateConfigFrame()
     local positionButton = frame.settingsContainer.positionButton
 
     positionButton:SetScript("OnClick", function()
-        local fontSize = SUPConfig.fontSize
-        local height = fontSize * 2.5
-
         if not SUP.anchorFrame then
             SUP.positionButton = positionButton
             SUP.anchorFrame = SUP.CreateAnchorFrame()
         end
 
-        -- Update size and font dynamically
-        local width = SUP.CalculateNotificationWidth(fontSize, SUP.anchorFrame.text, false) * 1.2
-        SUP.anchorFrame:SetSize(width, height)
-        SUP.anchorFrame.text:SetFont(SUP.anchorFrame.text:GetFont(), fontSize)
+        -- Update font and size using our existing method
+        SUP.anchorFrame:UpdateSize()
 
         -- Show the anchor frame and update button text immediately
         if not SUP.anchorFrame:IsShown() then

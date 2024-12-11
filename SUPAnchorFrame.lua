@@ -23,13 +23,32 @@ function SUP.CreateAnchorFrame(positionButton)
     local text = anchorFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     text:SetPoint("CENTER", anchorFrame, "CENTER", 0, 0)
     text:SetText("Notification Position")
-    text:SetFont(text:GetFont(), SUPConfig.fontSize)
     anchorFrame.text = text
 
-    -- Set initial size and position
-    local width = SUP.CalculateNotificationWidth(SUPConfig.fontSize, text, false) * 1.2
-    local height = SUPConfig.fontSize * 2.5
-    anchorFrame:SetSize(width, height)
+    -- Function to update frame size based on text
+    function anchorFrame:UpdateSize()
+        -- Set the font first
+        self.text:SetFont(self.text:GetFont(), SUPConfig.fontSize)
+
+        -- Let the text determine its own size without constraints
+        self.text:SetWidth(0)
+
+        -- Get the actual text dimensions
+        local textWidth = self.text:GetStringWidth()
+        local textHeight = self.text:GetStringHeight()
+
+        -- Add padding for the backdrop and some breathing room
+        local totalWidth = textWidth + 40 -- Extra padding for visual comfort
+        local totalHeight = textHeight + 20
+
+        -- Set the frame size
+        self:SetSize(totalWidth, totalHeight)
+    end
+
+    -- Initial size update
+    anchorFrame:UpdateSize()
+
+    -- Set initial position
     anchorFrame:SetPoint(
         SUPConfig.position.point or "CENTER",
         UIParent,
@@ -67,6 +86,14 @@ function SUP.CreateAnchorFrame(positionButton)
             self:Show()
         end
         SUP.DebugPrint("After toggle - IsShown:", self:IsShown())
+    end
+
+    -- Add a method to update both font size and frame size
+    function anchorFrame:UpdateFontSize(newSize)
+        -- Update the stored font size
+        SUPConfig.fontSize = newSize
+        -- Call UpdateSize to ensure padding is maintained
+        self:UpdateSize()
     end
 
     return anchorFrame
