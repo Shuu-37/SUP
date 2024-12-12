@@ -16,7 +16,7 @@ SUP.trackableSkills = {
     "Cooking", "First Aid", "Fishing",
 
     -- Weapon Skills
-    "Defense", "Daggers", "Fist Weapons", "One-Handed Axes", "One-Handed Maces",
+    "Defense", "Daggers", "Fist Weapons", "One-Handed Axes", "Maces",
     "Swords",
     "Polearms", "Staves", "Two-Handed Axes",
     "Two-Handed Maces", "Two-Handed Swords", "Bows", "Crossbows",
@@ -46,7 +46,7 @@ SUP.skillIcons = {
     Daggers = "Interface\\Icons\\INV_Weapon_ShortBlade_01",
     ["Fist Weapons"] = "Interface\\Icons\\INV_Gauntlets_04",
     ["One-Handed Axes"] = "Interface\\Icons\\INV_Axe_01",
-    ["One-Handed Maces"] = "Interface\\Icons\\INV_Mace_01",
+    Maces = "Interface\\Icons\\INV_Mace_01",
     Swords = "Interface\\Icons\\INV_Sword_04",
     Polearms = "Interface\\Icons\\INV_Spear_06",
     Staves = "Interface\\Icons\\INV_Staff_02",
