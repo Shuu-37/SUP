@@ -3,7 +3,7 @@
     <!-- Config Frame Template -->
     <Frame name="SUPConfigFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true"
         movable="true" inherits="TooltipBackdropTemplate" virtual="true">
-        <Size x="408" y="250" />
+        <Size x="408" y="280" />
 
         <Layers>
             <Layer level="OVERLAY">
@@ -24,11 +24,47 @@
         </Layers>
 
         <Frames>
+            <!-- Tab Container -->
+            <Frame parentKey="tabContainer">
+                <Size x="340" y="20" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" x="15" y="-40" />
+                </Anchors>
+
+                <Frames>
+                    <!-- Notifications Tab Button -->
+                    <Button name="$parentNotificationsTab" inherits="UIPanelButtonTemplate"
+                        parentKey="notificationsTab" text="Notifications">
+                        <Size x="80" y="20" />
+                        <Anchors>
+                            <Anchor point="LEFT" x="0" y="0" />
+                        </Anchors>
+                        <NormalFont style="GameFontNormalSmall" />
+                        <HighlightFont style="GameFontNormalSmall" />
+                        <DisabledFont style="GameFontNormalSmall" />
+                    </Button>
+
+                    <!-- Tracker Tab Button -->
+                    <Button name="$parentTrackerTab" inherits="UIPanelButtonTemplate"
+                        parentKey="trackerTab" text="Tracker">
+                        <Size x="80" y="20" />
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.notificationsTab"
+                                relativePoint="RIGHT" x="4" y="0" />
+                        </Anchors>
+                        <NormalFont style="GameFontNormalSmall" />
+                        <HighlightFont style="GameFontNormalSmall" />
+                        <DisabledFont style="GameFontNormalSmall" />
+                    </Button>
+                </Frames>
+            </Frame>
+
             <!-- Settings Container -->
             <Frame parentKey="settingsContainer" inherits="BackdropTemplate">
-                <Size x="380" y="200" />
+                <Size x="380" y="120" />
                 <Anchors>
-                    <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="-30" />
+                    <Anchor point="TOP" relativeKey="$parent.tabContainer" relativePoint="BOTTOM"
+                        x="15" y="-10" />
                 </Anchors>
                 <Scripts>
                     <OnLoad>
@@ -162,7 +198,7 @@
                         <Size x="140" y="32" />
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeKey="$parent.checkboxContainer"
-                                relativePoint="BOTTOMLEFT" x="0" y="-16" />
+                                relativePoint="BOTTOMLEFT" x="0" y="-8" />
                         </Anchors>
                     </Button>
                 </Frames>

@@ -2,7 +2,7 @@
 ## Title: SUP (SkillUp Plus)
 ## Notes: Tracks skill ups for Classic Era
 ## Author: Shuu
-## Version: 1.0.9
+## Version: 1.1.0
 ## SavedVariables: SUPConfig
 
 SUPLocals.lua

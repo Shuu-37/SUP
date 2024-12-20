@@ -57,9 +57,11 @@ function SUP.CreateConfigFrame()
     local durationSlider = SUP.Utils.GetSettingsElement(frame, "DurationSlider")
     if durationSlider then
         durationSlider:SetValue(SUPConfig.duration or 1.5)
+        -- Set initial text value
+        durationSlider.Text:SetText(string.format("Duration (%.1fs)", SUPConfig.duration or 1.5))
         durationSlider:SetScript("OnValueChanged", function(self, value)
             SUPConfig.duration = value
-            self.Text:SetText(string.format("Duration (%.1fs)", value))
+            self.Text:SetText(string.format("Duration (%.1fs)", SUPConfig.duration))
             SUP.DebugPrint("Duration set to:", value)
         end)
     end
