@@ -2,14 +2,22 @@ local addonName, SUP = ...
 local L = SUP.Locals
 
 function SUP.CreateSkillTrackerDisplay()
+    -- Set up resizing with dynamic minimum size based on entries
+    local MIN_ENTRY_HEIGHT = 25 -- Minimum height per entry
+    local MIN_SPACING = 2       -- Minimum spacing between entries
+    local BAR_OFFSET = 1        -- Fixed offset for progress bars below content
+    local MIN_WIDTH = 150
+    local MIN_HEIGHT = 100
+
     -- Initialize saved variables if they don't exist
     SUPConfig.trackerShown = SUPConfig.trackerShown or false
     SUPConfig.trackerSize = SUPConfig.trackerSize or { width = 200, height = 150 }
     SUPConfig.trackerStyle = SUPConfig.trackerStyle or {
-        spacing = 2,
+        spacing = MIN_SPACING,
         iconSize = 20.5,
         fontSize = 12.0,
-        barHeight = 2
+        barHeight = 2,
+        entryHeight = MIN_ENTRY_HEIGHT
     }
 
     -- Create the main container frame
@@ -30,7 +38,7 @@ function SUP.CreateSkillTrackerDisplay()
     -- Set up resizing with dynamic minimum size based on entries
     local MIN_ENTRY_HEIGHT = 25 -- Minimum height per entry
     local MIN_SPACING = 2       -- Minimum spacing between entries
-    local BAR_OFFSET = 2        -- Fixed offset for progress bars below content
+    local BAR_OFFSET = 1        -- Fixed offset for progress bars below content
     local MIN_WIDTH = 150
     local MIN_HEIGHT = 100
     local ASPECT_RATIO = MIN_WIDTH / MIN_HEIGHT
@@ -115,29 +123,32 @@ function SUP.CreateSkillTrackerDisplay()
     -- Function to create a skill entry
     local function CreateSkillEntry(skillName)
         local entry = L.CreateFrame("Frame", nil, skillContainer)
-        entry:SetHeight(30)
+        entry:SetHeight(SUPConfig.trackerStyle.entryHeight or MIN_ENTRY_HEIGHT)
         entry:SetPoint("LEFT", 0, 0)
         entry:SetPoint("RIGHT", 0, 0)
 
         -- Skill icon
         local icon = entry:CreateTexture(nil, "ARTWORK")
-        icon:SetSize(24, 24)
+        icon:SetSize(SUPConfig.trackerStyle.iconSize or 20.5, SUPConfig.trackerStyle.iconSize or 20.5)
         icon:SetPoint("LEFT", entry, "LEFT", 5, 0)
         icon:SetTexture(SUP.skillIcons[skillName] or "Interface\\Icons\\INV_Misc_QuestionMark")
 
         -- Skill name
-        local name = entry:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        local name = entry:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         name:SetPoint("LEFT", icon, "RIGHT", 5, 0)
         name:SetText(skillName)
+        name:SetFont(name:GetFont(), SUPConfig.trackerStyle.fontSize or 12.0)
 
         -- Skill level text
         local levelText = entry:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         levelText:SetPoint("RIGHT", entry, "RIGHT", -5, 0)
+        levelText:SetFont(levelText:GetFont(), SUPConfig.trackerStyle.fontSize or 12.0)
 
         -- Progress bar background
+        local spacing = SUPConfig.trackerStyle.spacing or MIN_SPACING
         local barBg = entry:CreateTexture(nil, "BACKGROUND")
-        barBg:SetPoint("TOPLEFT", entry, "BOTTOMLEFT", 5, 2)
-        barBg:SetPoint("BOTTOMRIGHT", entry, "BOTTOMRIGHT", -5, -2)
+        barBg:SetPoint("TOPLEFT", entry, "BOTTOMLEFT", 5, spacing)
+        barBg:SetPoint("BOTTOMRIGHT", entry, "BOTTOMRIGHT", -5, -spacing)
         barBg:SetColorTexture(0, 0, 0, 0.8)
 
         -- Progress bar foreground
@@ -168,6 +179,7 @@ function SUP.CreateSkillTrackerDisplay()
 
     -- Function to update the display
     function frame:UpdateDisplay()
+        SUP.DebugPrint("UpdateDisplay called")
         local yOffset = 0
         local currentSkills = SUP.SkillTracker.ScanSkills()
 
@@ -243,7 +255,9 @@ function SUP.CreateSkillTrackerDisplay()
                 end
             end
 
-            yOffset = yOffset - (entry:GetHeight() + spacing)
+            -- Update spacing for next entry using saved height
+            local entryHeight = SUPConfig.trackerStyle.entryHeight or MIN_ENTRY_HEIGHT
+            yOffset = yOffset - (entryHeight + spacing)
         end
 
         -- Update container height
@@ -253,6 +267,7 @@ function SUP.CreateSkillTrackerDisplay()
 
     -- Add resize update to maintain aspect ratio and update content
     frame:SetScript("OnSizeChanged", function(self, width, height)
+        SUP.DebugPrint("OnSizeChanged called - width:", width, "height:", height)
         -- Calculate minimum height based on current entries
         local minHeight = GetMinimumHeight()
 
@@ -272,14 +287,23 @@ function SUP.CreateSkillTrackerDisplay()
             end
         end
 
-        -- Calculate sizes based on available space
-        local entryHeight
+        -- Calculate entry height and save it
+        local newEntryHeight = MIN_ENTRY_HEIGHT -- Default value
         if visibleEntries > 0 then
-            local spacing = math.max(2, SUPConfig.trackerStyle.spacing or 2) -- Ensure minimum 2px spacing
+            local spacing = math.max(2, SUPConfig.trackerStyle.spacing or 2)
             local totalSpacing = (visibleEntries - 1) * spacing
-            entryHeight = math.max(MIN_ENTRY_HEIGHT, (availableHeight - totalSpacing) / visibleEntries)
-        else
-            entryHeight = MIN_ENTRY_HEIGHT
+            newEntryHeight = math.max(MIN_ENTRY_HEIGHT, (availableHeight - totalSpacing) / visibleEntries)
+
+            -- Only update if the height actually changed
+            if newEntryHeight ~= SUPConfig.trackerStyle.entryHeight then
+                SUPConfig.trackerStyle.entryHeight = newEntryHeight
+                -- Force an update of all entries with the new height
+                for _, entry in pairs(self.entries) do
+                    if entry:IsShown() then
+                        entry:SetHeight(newEntryHeight)
+                    end
+                end
+            end
         end
 
         -- Calculate common dimensions for all entries
@@ -288,14 +312,14 @@ function SUP.CreateSkillTrackerDisplay()
         local spacing = SUPConfig.trackerStyle.spacing or 2
 
         -- Calculate bar height based on entry height
-        local barHeight = math.max(1, entryHeight * 0.08) -- 8% of entry height, minimum 1 pixel
-        SUPConfig.trackerStyle.barHeight = barHeight      -- Store the calculated height
+        local barHeight = math.max(1, newEntryHeight * 0.08) -- 8% of entry height, minimum 1 pixel
+        SUPConfig.trackerStyle.barHeight = barHeight         -- Store the calculated height
 
         -- Update debug output with actual values being used
         SUP.DebugPrint(string.format("Sizes - Icon: %.1f, Font: %.1f, Bar: %.1f",
             iconSize, fontSize, SUPConfig.trackerStyle.barHeight))
         SUP.DebugPrint(string.format("Frame size: %d x %d (min height: %d)", width, height, minHeight))
-        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f", visibleEntries, entryHeight))
+        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f", visibleEntries, newEntryHeight))
 
         -- Update container size
         skillContainer:SetWidth(width - 16)
@@ -308,7 +332,7 @@ function SUP.CreateSkillTrackerDisplay()
                 entry:ClearAllPoints()
 
                 -- Set up entry frame
-                entry:SetHeight(entryHeight)
+                entry:SetHeight(newEntryHeight)
                 entry:SetPoint("TOPLEFT", skillContainer, "TOPLEFT", 0, yOffset)
                 entry:SetWidth(skillContainer:GetWidth())
 
@@ -346,7 +370,7 @@ function SUP.CreateSkillTrackerDisplay()
                 end
 
                 -- Update spacing for next entry
-                yOffset = yOffset - (entryHeight + spacing)
+                yOffset = yOffset - (newEntryHeight + spacing)
             end
         end
 
@@ -358,7 +382,7 @@ function SUP.CreateSkillTrackerDisplay()
         self:SetResizeBounds(MIN_WIDTH, minHeight)
 
         SUP.DebugPrint(string.format("Frame size: %d x %d (min height: %d)", width, height, minHeight))
-        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f", visibleEntries, entryHeight))
+        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f", visibleEntries, newEntryHeight))
         SUP.DebugPrint(string.format("Sizes - Icon: %.1f, Font: %.1f, Bar: %.1f",
             iconSize, fontSize, barHeight))
     end)
@@ -408,6 +432,15 @@ function SUP.CreateSkillTrackerDisplay()
             y = y
         }
     end)
+
+    -- Set initial size using saved values
+    frame:SetSize(
+        SUPConfig.trackerSize.width or 200,
+        SUPConfig.trackerSize.height or 150
+    )
+
+    -- Trigger an initial resize to set up entry heights
+    frame:GetScript("OnSizeChanged")(frame, frame:GetWidth(), frame:GetHeight())
 
     return frame
 end
