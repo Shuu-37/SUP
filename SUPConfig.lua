@@ -24,22 +24,80 @@ function SUP.CreateConfigFrame()
     SUP.DebugPrint("Notifications Tab:", notificationsTab)
     SUP.DebugPrint("Tracker Tab:", trackerTab)
 
-    -- Function to switch tabs
+    -- Create a single position button (add this near the start of CreateConfigFrame after creating the frame)
+    local positionButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    positionButton:SetSize(100, 22)
+    positionButton:SetPoint("TOPLEFT", frame.tabContainer, "TOPRIGHT", -60, 0)
+    positionButton:SetText("Edit Position")
+
+    -- Function to handle position button clicks based on current tab
+    local function HandlePositionButton(self, currentTab)
+        if currentTab == "notifications" then
+            -- Handle notifications anchor
+            if not SUP.anchorFrame then
+                SUP.positionButton = self
+                SUP.anchorFrame = SUP.CreateAnchorFrame()
+            end
+            SUP.anchorFrame:UpdateSize()
+            if not SUP.anchorFrame:IsShown() then
+                SUP.anchorFrame:Show()
+                self:SetText("Save Position")
+            else
+                SUP.anchorFrame:Hide()
+                self:SetText("Edit Position")
+            end
+        else
+            -- Handle tracker anchor
+            if not SUP.skillTrackerAnchorFrame then
+                SUP.skillTrackerPositionButton = self
+                SUP.skillTrackerAnchorFrame = SUP.CreateSkillTrackerAnchorFrame()
+            end
+            SUP.skillTrackerAnchorFrame:UpdateSize()
+            if not SUP.skillTrackerAnchorFrame:IsShown() then
+                SUP.skillTrackerAnchorFrame:Show()
+                self:SetText("Save Position")
+            else
+                SUP.skillTrackerAnchorFrame:Hide()
+                self:SetText("Edit Position")
+            end
+        end
+    end
+
+    -- Modify the SwitchTab function to update the position button state
     local function SwitchTab(selectedTab)
         if selectedTab == "notifications" then
             notificationsContent:Show()
             trackerContent:Hide()
             notificationsTab:SetEnabled(false)
             trackerTab:SetEnabled(true)
+            -- Reset position button state
+            positionButton:SetText("Edit Position")
+            if SUP.skillTrackerAnchorFrame and SUP.skillTrackerAnchorFrame:IsShown() then
+                SUP.skillTrackerAnchorFrame:Hide()
+            end
         else
             notificationsContent:Hide()
             trackerContent:Show()
             notificationsTab:SetEnabled(true)
             trackerTab:SetEnabled(false)
+            -- Reset position button state
+            positionButton:SetText("Edit Position")
+            if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
+                SUP.anchorFrame:Hide()
+            end
             -- Update skill list when switching to tracker tab
             SUP.UpdateSkillList(trackerContent.scrollFrame.content)
         end
     end
+
+    -- Set up position button click handler
+    positionButton:SetScript("OnClick", function(self)
+        if notificationsContent:IsShown() then
+            HandlePositionButton(self, "notifications")
+        else
+            HandlePositionButton(self, "tracker")
+        end
+    end)
 
     -- Set up tab button scripts
     if notificationsTab then
@@ -146,25 +204,6 @@ function SUP.CreateConfigFrame()
         end)
     end
 
-    -- Setup position button
-    local positionButton = SUP.Utils.GetSettingsElement(frame, "positionButton")
-    if positionButton then
-        positionButton:SetScript("OnClick", function()
-            if not SUP.anchorFrame then
-                SUP.positionButton = positionButton
-                SUP.anchorFrame = SUP.CreateAnchorFrame()
-            end
-            SUP.anchorFrame:UpdateSize()
-            if not SUP.anchorFrame:IsShown() then
-                SUP.anchorFrame:Show()
-                positionButton:SetText("Save Position")
-            else
-                SUP.anchorFrame:Hide()
-                positionButton:SetText("Edit Position")
-            end
-        end)
-    end
-
     -- Set version text
     local versionText = SUP.Utils.GetFrameElement(frame, "$parentVersion")
     if versionText then
@@ -258,6 +297,17 @@ function SUP.UpdateSkillList(scrollChild)
         levelText:SetPoint("LEFT", nameText, "RIGHT", 6, 0)
         levelText:SetText(string.format("(%d/%d)", skillData.rank, skillData.max))
         levelText:SetTextColor(0.7, 0.7, 0.7, 1)
+
+        -- Set initial checkbox state from saved variable
+        checkbox:SetChecked(_G.SUPTrackedSkills[skillName] or false)
+
+        -- Add click handler
+        checkbox:SetScript("OnClick", function(self)
+            local isChecked = self:GetChecked()
+            _G.SUPTrackedSkills[skillName] = isChecked
+            SUP.DebugPrint(string.format("Skill tracking for %s is now %s", skillName,
+                isChecked and "enabled" or "disabled"))
+        end)
 
         yOffset = yOffset - rowHeight - 2
     end

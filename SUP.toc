@@ -3,7 +3,7 @@
 ## Notes: Tracks skill ups for Classic Era
 ## Author: Shuu
 ## Version: 1.1.0
-## SavedVariables: SUPConfig
+## SavedVariables: SUPConfig, SUPTrackedSkills
 
 SUPLocals.lua
 SUPUtils.lua
@@ -12,5 +12,6 @@ SUPCore.lua
 SUPSounds.lua
 SUPConfig.lua
 SUPAnchorFrame.lua
+SUPSkillTrackerAnchorFrame.lua
 SUPSkillTracker.lua
 SUPNotification.lua 

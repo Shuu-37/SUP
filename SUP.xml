@@ -110,17 +110,6 @@
                                 </Scripts>
                             </Slider>
 
-                            <!-- Position Button -->
-                            <Button name="$parentPositionButton" inherits="UIPanelButtonTemplate"
-                                parentKey="positionButton" text="Edit Position">
-                                <Size x="140" y="22" />
-                                <Anchors>
-                                    <Anchor point="LEFT" relativeKey="$parent.FontSlider"
-                                        relativePoint="RIGHT"
-                                        x="20" y="0" />
-                                </Anchors>
-                            </Button>
-
                             <!-- Duration Slider -->
                             <Slider name="$parentDurationSlider" inherits="OptionsSliderTemplate"
                                 parentKey="DurationSlider">

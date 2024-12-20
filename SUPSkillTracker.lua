@@ -1,9 +1,10 @@
 local addonName, SUP = ...
 local L = SUP.Locals
 
--- Initialize the skill tracker
+-- Initialize the skill tracker and saved variables
 SUP.SkillTracker = {}
 SUP.lastKnownSkills = {}
+_G.SUPTrackedSkills = _G.SUPTrackedSkills or {}
 
 -- Add trackable skills table
 SUP.trackableSkills = {

@@ -10,6 +10,7 @@ SUPConfig = SUPConfig or {
     showIcon = true,
     debugMode = false,
     position = { x = 0, y = 0 },
+    skillTrackerPosition = { x = 0, y = 0 },
     playSound = true,
     soundKitID = 6295, -- Profession skill up sound
     duration = 1.0
