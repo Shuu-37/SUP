@@ -143,6 +143,11 @@ function SUP.SkillTracker.CheckForUpdates()
 
     -- Update last known skills
     SUP.lastKnownSkills = currentSkills
+
+    -- Update the display if it exists
+    if SUP.skillTrackerDisplay then
+        SUP.skillTrackerDisplay:UpdateDisplay()
+    end
 end
 
 function SUP.GetSkillIndex(skillName)

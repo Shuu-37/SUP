@@ -2,12 +2,17 @@ local addonName, SUP = ...
 local L = SUP.Locals
 
 function SUP.CreateSkillTrackerDisplay()
+    -- Create the main container frame
+    local frame = L.CreateFrame("Frame", "SUPSkillTrackerDisplay", UIParent, "BackdropTemplate")
+    Mixin(frame, BackdropTemplateMixin)
     -- Set up resizing with dynamic minimum size based on entries
     local MIN_ENTRY_HEIGHT = 25 -- Minimum height per entry
     local MIN_SPACING = 2       -- Minimum spacing between entries
     local BAR_OFFSET = 1        -- Fixed offset for progress bars below content
     local MIN_WIDTH = 150
     local MIN_HEIGHT = 100
+    local ASPECT_RATIO = MIN_WIDTH / MIN_HEIGHT
+    frame:SetResizable(true)
 
     -- Initialize saved variables if they don't exist
     SUPConfig.trackerShown = SUPConfig.trackerShown or false
@@ -20,10 +25,6 @@ function SUP.CreateSkillTrackerDisplay()
         entryHeight = MIN_ENTRY_HEIGHT
     }
 
-    -- Create the main container frame
-    local frame = L.CreateFrame("Frame", "SUPSkillTrackerDisplay", UIParent, "BackdropTemplate")
-    Mixin(frame, BackdropTemplateMixin)
-
     -- Set size using individual width and height values
     frame:SetSize(200, 150) -- Set initial size
     frame:Hide()
@@ -34,15 +35,6 @@ function SUP.CreateSkillTrackerDisplay()
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-
-    -- Set up resizing with dynamic minimum size based on entries
-    local MIN_ENTRY_HEIGHT = 25 -- Minimum height per entry
-    local MIN_SPACING = 2       -- Minimum spacing between entries
-    local BAR_OFFSET = 1        -- Fixed offset for progress bars below content
-    local MIN_WIDTH = 150
-    local MIN_HEIGHT = 100
-    local ASPECT_RATIO = MIN_WIDTH / MIN_HEIGHT
-    frame:SetResizable(true)
 
     -- Function to calculate minimum height based on visible entries
     local function GetMinimumHeight()
@@ -145,16 +137,16 @@ function SUP.CreateSkillTrackerDisplay()
         levelText:SetFont(levelText:GetFont(), SUPConfig.trackerStyle.fontSize or 12.0)
 
         -- Progress bar background
-        local spacing = SUPConfig.trackerStyle.spacing or MIN_SPACING
         local barBg = entry:CreateTexture(nil, "BACKGROUND")
-        barBg:SetPoint("TOPLEFT", entry, "BOTTOMLEFT", 5, spacing)
-        barBg:SetPoint("BOTTOMRIGHT", entry, "BOTTOMRIGHT", -5, -spacing)
+        barBg:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", 0, -BAR_OFFSET)
+        barBg:SetPoint("RIGHT", entry, "RIGHT", -5, 0)
+        barBg:SetHeight(SUPConfig.trackerStyle.barHeight or 2)
         barBg:SetColorTexture(0, 0, 0, 0.8)
 
         -- Progress bar foreground
         local barFg = entry:CreateTexture(nil, "ARTWORK")
         barFg:SetPoint("TOPLEFT", barBg, "TOPLEFT", 0, 0)
-        barFg:SetPoint("BOTTOM", barBg, "BOTTOM", 0, 0)
+        barFg:SetHeight(SUPConfig.trackerStyle.barHeight or 2)
         barFg:SetColorTexture(0.25, 0.5, 1.0, 1.0)
 
         entry.icon = icon
@@ -168,9 +160,12 @@ function SUP.CreateSkillTrackerDisplay()
             if not current or not max then return end -- Guard against nil values
             self.levelText:SetText(string.format("%d/%d", current, max))
             local width = self.barBg:GetWidth()
-            if width > 0 then -- Only update if we have a valid width
+            if width > 0 then                                                   -- Only update if we have a valid width
                 local progress = math.min(1, math.max(0, current / max))
-                self.barFg:SetWidth(math.max(1, width * progress))
+                local barWidth = math.min(width, math.max(1, width * progress)) -- Ensure fg never exceeds bg
+                self.barFg:SetWidth(barWidth)
+            else
+                self.barFg:SetWidth(1) -- Set minimum width if background width isn't ready
             end
         end
 
@@ -182,26 +177,47 @@ function SUP.CreateSkillTrackerDisplay()
         SUP.DebugPrint("UpdateDisplay called")
         local yOffset = 0
         local currentSkills = SUP.SkillTracker.ScanSkills()
-
-        -- Create sorted list of tracked skills
         local sortedSkills = {}
-        local currentSkills = SUP.SkillTracker.ScanSkills()
 
-        -- Get skills in the same order as they appear in the game's skill list
-        local orderedSkills = {}
-        for i = 1, L.GetNumSkillLines() do
-            local name, isHeader = L.GetSkillLineInfo(i)
-            if not isHeader and currentSkills[name] and _G.SUPTrackedSkills[name] then
-                table.insert(orderedSkills, name)
+        -- Helper function to determine category (same as in SUPConfig.lua)
+        local function GetSkillCategory(skillName)
+            if skillName == "Defense" or skillName == "Axes" or skillName == "Bows" or
+                skillName == "Crossbows" or skillName == "Daggers" or skillName == "Fist Weapons" or
+                skillName == "Guns" or skillName == "Maces" or skillName == "Polearms" or
+                skillName == "Staves" or skillName == "Swords" or skillName == "Thrown" or
+                skillName == "Two-Handed Axes" or skillName == "Two-Handed Maces" or
+                skillName == "Two-Handed Swords" or skillName == "Unarmed" or skillName == "Wands" then
+                return "Weapon Skills"
+            elseif skillName == "Cooking" or skillName == "First Aid" or skillName == "Fishing" then
+                return "Secondary Professions"
+            else
+                return "Primary Professions"
             end
         end
 
-        -- Add skills in the original game order
-        for _, skillName in ipairs(orderedSkills) do
-            table.insert(sortedSkills, {
-                name = skillName,
-                data = currentSkills[skillName]
-            })
+        -- First pass: organize skills by category
+        local categorizedSkills = {
+            ["Primary Professions"] = {},
+            ["Secondary Professions"] = {},
+            ["Weapon Skills"] = {}
+        }
+
+        -- Sort skills into categories while maintaining order from skillOrder
+        for _, skillName in ipairs(SUP.skillOrder) do
+            if currentSkills[skillName] and _G.SUPTrackedSkills[skillName] then
+                local category = GetSkillCategory(skillName)
+                table.insert(categorizedSkills[category], {
+                    name = skillName,
+                    data = currentSkills[skillName]
+                })
+            end
+        end
+
+        -- Second pass: combine categories in order
+        for _, category in ipairs({ "Primary Professions", "Secondary Professions", "Weapon Skills" }) do
+            for _, skillInfo in ipairs(categorizedSkills[category]) do
+                table.insert(sortedSkills, skillInfo)
+            end
         end
 
         -- Hide all existing entries
@@ -209,19 +225,14 @@ function SUP.CreateSkillTrackerDisplay()
             child:Hide()
         end
 
+        -- Get the fixed spacing value once
+        local spacing = SUPConfig.trackerStyle.spacing or MIN_SPACING
+        local entryHeight = SUPConfig.trackerStyle.entryHeight or MIN_ENTRY_HEIGHT
+
         -- Create/update entries for tracked skills
-        for _, skillInfo in ipairs(sortedSkills) do
+        for i, skillInfo in ipairs(sortedSkills) do
             local skillName = skillInfo.name
             local skillData = skillInfo.data
-            local spacing = math.max(2, SUPConfig.trackerStyle.spacing or 2)
-
-            -- If skill data is missing or rank is 0, try to get current skill info
-            if not skillData or not skillData.rank or skillData.rank == 0 then
-                local currentRank, maxRank = SUP.SkillTracker.GetSkillRank(skillName)
-                if currentRank and maxRank then
-                    skillData = { rank = currentRank, max = maxRank }
-                end
-            end
 
             local entry = self.entries[skillName]
             if not entry then
@@ -255,27 +266,26 @@ function SUP.CreateSkillTrackerDisplay()
                 end
             end
 
-            -- Update spacing for next entry using saved height
-            local entryHeight = SUPConfig.trackerStyle.entryHeight or MIN_ENTRY_HEIGHT
-            yOffset = yOffset - (entryHeight + spacing)
+            -- Calculate yOffset for next entry
+            -- Only add spacing if it's not the last entry
+            if i < #sortedSkills then
+                yOffset = yOffset - (entryHeight + spacing)
+            else
+                yOffset = yOffset - entryHeight
+            end
         end
 
         -- Update container height
-        SUP.DebugPrint("Final yOffset before SetHeight:", yOffset)
         if yOffset then
-            self.skillContainer:SetHeight(math.abs(yOffset))
-            SUP.DebugPrint("Container height set to:", math.abs(yOffset))
+            local totalHeight = math.abs(yOffset)
+            self.skillContainer:SetHeight(totalHeight)
 
-            -- Update frame height to match content
+            -- Update frame height to match content plus padding
             local minHeight = GetMinimumHeight()
-            local newHeight = math.max(minHeight, math.abs(yOffset) + 10)
+            local newHeight = math.max(minHeight, totalHeight + 10)
             self:SetHeight(newHeight)
-            SUP.DebugPrint("Frame height updated to:", newHeight)
-
-            -- Save the new size
             SUPConfig.trackerSize.height = newHeight
         else
-            SUP.DebugPrint("Warning: yOffset is nil!")
             self:SetHeight(MIN_HEIGHT)
             SUPConfig.trackerSize.height = MIN_HEIGHT
         end
@@ -287,11 +297,15 @@ function SUP.CreateSkillTrackerDisplay()
         -- Calculate minimum height based on current entries
         local minHeight = GetMinimumHeight()
 
+        -- Only enforce minimum sizes during actual resizing
         if self.isSizing then
             -- Enforce minimum sizes
             width = math.max(MIN_WIDTH, width)
             height = math.max(minHeight, height)
-            self:SetSize(width, height)
+            -- Only set size if it actually changed to avoid recursion
+            if width ~= self:GetWidth() or height ~= self:GetHeight() then
+                self:SetSize(width, height)
+            end
         end
 
         -- Calculate available space
@@ -340,50 +354,22 @@ function SUP.CreateSkillTrackerDisplay()
         -- Update container size
         skillContainer:SetWidth(width - 16)
 
-        -- Update all visible entries
+        -- Get current skills in correct order using same logic as UpdateDisplay
         local yOffset = 0
-        for _, entry in pairs(self.entries) do
-            if entry:IsShown() then
-                -- Clear all points first
-                entry:ClearAllPoints()
 
-                -- Set up entry frame
+        -- Use skillOrder to maintain consistent ordering
+        for _, skillName in ipairs(SUP.skillOrder) do
+            local entry = self.entries[skillName]
+            if entry and entry:IsShown() then
+                -- Update entry size
+                entry:ClearAllPoints()
                 entry:SetHeight(newEntryHeight)
                 entry:SetPoint("TOPLEFT", skillContainer, "TOPLEFT", 0, yOffset)
                 entry:SetWidth(skillContainer:GetWidth())
 
-                -- Resize and position icon
-                entry.icon:SetSize(iconSize, iconSize)
-                entry.icon:ClearAllPoints()
-                entry.icon:SetPoint("LEFT", entry, "LEFT", 5, 0)
-
-                -- Update fonts
-                entry.name:SetFont(entry.name:GetFont(), fontSize)
-                entry.levelText:SetFont(entry.levelText:GetFont(), fontSize)
-
-                -- Apply consistent bar dimensions to all entries
-                entry.barBg:ClearAllPoints()
-                entry.barBg:SetPoint("TOPLEFT", entry.icon, "BOTTOMLEFT", 0, -BAR_OFFSET)
-                entry.barBg:SetPoint("RIGHT", entry, "RIGHT", -spacing, 0)
+                -- Update bar height only
                 entry.barBg:SetHeight(math.max(1, barHeight))
-
-                entry.barFg:ClearAllPoints()
-                entry.barFg:SetPoint("TOPLEFT", entry.barBg, "TOPLEFT", 0, 0)
                 entry.barFg:SetHeight(math.max(1, barHeight))
-                -- Ensure the bar stays within bounds
-                local width = entry.barBg:GetWidth()
-                if width > 0 then
-                    local progress = tonumber(entry.levelText:GetText():match("(%d+)")) or 0
-                    local max = tonumber(entry.levelText:GetText():match("/(%d+)")) or 1
-                    local barWidth = math.max(1, width * (progress / max))
-                    entry.barFg:SetWidth(barWidth)
-                end
-
-                -- Update progress
-                local current, max = entry.levelText:GetText():match("(%d+)/(%d+)")
-                if current and max then
-                    entry:UpdateProgress(tonumber(current), tonumber(max))
-                end
 
                 -- Update spacing for next entry
                 yOffset = yOffset - (newEntryHeight + spacing)
@@ -428,14 +414,6 @@ function SUP.CreateSkillTrackerDisplay()
             y = 0
         }
     end
-
-    -- Update when skills change
-    frame:RegisterEvent("SKILL_LINES_CHANGED")
-    frame:SetScript("OnEvent", function(self, event)
-        if event == "SKILL_LINES_CHANGED" then
-            self:UpdateDisplay()
-        end
-    end)
 
     -- Add debug logging for visibility changes
     frame:HookScript("OnShow", function()
