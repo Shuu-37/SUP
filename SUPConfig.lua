@@ -17,6 +17,7 @@ function SUP.CreateConfigFrame()
     local trackerContent = SUP.Utils.GetElement(frame, "trackerContent")
     local notificationsTab = SUP.Utils.GetElement(frame, "tabContainer.notificationsTab")
     local trackerTab = SUP.Utils.GetElement(frame, "tabContainer.trackerTab")
+    local positionTab = SUP.Utils.GetElement(frame, "tabContainer.positionTab")
 
     -- Add debug prints to help diagnose any issues
     SUP.DebugPrint("Notifications Content:", notificationsContent)
@@ -24,14 +25,14 @@ function SUP.CreateConfigFrame()
     SUP.DebugPrint("Notifications Tab:", notificationsTab)
     SUP.DebugPrint("Tracker Tab:", trackerTab)
 
-    -- Create a single position button (add this near the start of CreateConfigFrame after creating the frame)
-    local positionButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    positionButton:SetSize(100, 22)
-    positionButton:SetPoint("TOPLEFT", frame.tabContainer, "TOPRIGHT", -60, 0)
-    positionButton:SetText("Edit Anchor")
-
     -- Function to handle position button clicks based on current tab
     local function HandlePositionButton(self, currentTab)
+        -- Set the button text size to match tab text
+        local buttonText = self:GetFontString()
+        if buttonText then
+            buttonText:SetFontObject("GameFontNormalSmall")
+        end
+
         if currentTab == "notifications" then
             -- Handle notifications anchor
             if not SUP.anchorFrame then
@@ -71,7 +72,7 @@ function SUP.CreateConfigFrame()
             notificationsTab:SetEnabled(false)
             trackerTab:SetEnabled(true)
             -- Reset position button state
-            positionButton:SetText("Edit Anchor")
+            positionTab:SetText("Edit Anchor")
             if SUP.skillTrackerAnchorFrame and SUP.skillTrackerAnchorFrame:IsShown() then
                 SUP.skillTrackerAnchorFrame:Hide()
             end
@@ -81,7 +82,7 @@ function SUP.CreateConfigFrame()
             notificationsTab:SetEnabled(true)
             trackerTab:SetEnabled(false)
             -- Reset position button state
-            positionButton:SetText("Edit Anchor")
+            positionTab:SetText("Edit Anchor")
             if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
                 SUP.anchorFrame:Hide()
             end
@@ -91,7 +92,7 @@ function SUP.CreateConfigFrame()
     end
 
     -- Set up position button click handler
-    positionButton:SetScript("OnClick", function(self)
+    positionTab:SetScript("OnClick", function(self)
         if notificationsContent:IsShown() then
             HandlePositionButton(self, "notifications")
         else
@@ -334,28 +335,40 @@ function SUP.UpdateSkillList(scrollChild)
         yOffset = yOffset - (rowHeight)
     end
 
-    -- Add Primary Professions
-    AddCategoryHeader("Primary Professions")
+    -- Add Primary Professions if they exist
+    local hasPrimarySkills = false
     for skillName, skillData in pairs(currentSkills) do
         if primaryProfessions[skillName] then
+            if not hasPrimarySkills then
+                AddCategoryHeader("Primary Professions")
+                hasPrimarySkills = true
+            end
             CreateSkillRow(skillName, skillData)
         end
     end
 
-    -- Add Secondary Professions
-    yOffset = yOffset - 10
-    AddCategoryHeader("Secondary Professions")
+    -- Add Secondary Professions if they exist
+    local hasSecondarySkills = false
     for skillName, skillData in pairs(currentSkills) do
         if secondaryProfessions[skillName] then
+            if not hasSecondarySkills then
+                yOffset = yOffset - 10
+                AddCategoryHeader("Secondary Professions")
+                hasSecondarySkills = true
+            end
             CreateSkillRow(skillName, skillData)
         end
     end
 
-    -- Add Weapon Skills
-    yOffset = yOffset - 10
-    AddCategoryHeader("Weapon Skills")
+    -- Add Weapon Skills if they exist
+    local hasWeaponSkills = false
     for skillName, skillData in pairs(currentSkills) do
         if not primaryProfessions[skillName] and not secondaryProfessions[skillName] then
+            if not hasWeaponSkills then
+                yOffset = yOffset - 10
+                AddCategoryHeader("Weapon Skills")
+                hasWeaponSkills = true
+            end
             CreateSkillRow(skillName, skillData)
         end
     end

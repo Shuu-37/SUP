@@ -56,6 +56,19 @@
                         <HighlightFont style="GameFontNormalSmall" />
                         <DisabledFont style="GameFontNormalSmall" />
                     </Button>
+
+                    <!-- Position Tab Button -->
+                    <Button name="$parentPositionTab" inherits="UIPanelButtonTemplate"
+                        parentKey="positionTab" text="Edit Anchor">
+                        <Size x="80" y="20" />
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.trackerTab"
+                                relativePoint="RIGHT" x="125" y="0" />
+                        </Anchors>
+                        <NormalFont style="GameFontNormalSmall" />
+                        <HighlightFont style="GameFontNormalSmall" />
+                        <DisabledFont style="GameFontNormalSmall" />
+                    </Button>
                 </Frames>
             </Frame>
 
