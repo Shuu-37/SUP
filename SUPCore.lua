@@ -67,6 +67,9 @@ SUP.frame:SetScript("OnEvent", function(self, event, ...)
             SUP.anchorFrame = SUP.CreateAnchorFrame()
         end
         SUP.SkillTracker.Initialize()
+        -- Create and show the skill tracker display
+        SUP.skillTrackerDisplay = SUP.CreateSkillTrackerDisplay()
+        SUP.skillTrackerDisplay:Show()
     elseif event == "SKILL_LINES_CHANGED" then
         SUP.SkillTracker.CheckForUpdates()
     end

@@ -12,6 +12,6 @@ SUPCore.lua
 SUPSounds.lua
 SUPConfig.lua
 SUPAnchorFrame.lua
-SUPSkillTrackerAnchorFrame.lua
 SUPSkillTracker.lua
+SUPSkillTrackerDisplay.lua
 SUPNotification.lua 

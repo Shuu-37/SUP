@@ -48,24 +48,26 @@ function SUP.CreateConfigFrame()
                 self:SetText("Edit Anchor")
             end
         else
-            -- Handle tracker anchor
-            if not SUP.skillTrackerAnchorFrame then
-                SUP.skillTrackerPositionButton = self
-                SUP.skillTrackerAnchorFrame = SUP.CreateSkillTrackerAnchorFrame()
-            end
-            SUP.skillTrackerAnchorFrame:UpdateSize()
-            if not SUP.skillTrackerAnchorFrame:IsShown() then
-                SUP.skillTrackerAnchorFrame:Show()
-                self:SetText("Save Anchor")
-            else
-                SUP.skillTrackerAnchorFrame:Hide()
-                self:SetText("Edit Anchor")
+            -- Handle tracker display visibility
+            if SUP.skillTrackerDisplay then
+                if not SUP.skillTrackerDisplay:IsShown() then
+                    SUP.DebugPrint("Showing tracker display")
+                    SUP.skillTrackerDisplay:Show()
+                    SUPConfig.trackerShown = true
+                    self:SetText("Hide Tracker")
+                else
+                    SUP.DebugPrint("Hiding tracker display")
+                    SUP.skillTrackerDisplay:Hide()
+                    SUPConfig.trackerShown = false
+                    self:SetText("Show Tracker")
+                end
             end
         end
     end
 
     -- Modify the SwitchTab function to update the position button state
     local function SwitchTab(selectedTab)
+        SUP.DebugPrint("Switching to tab:", selectedTab)
         if selectedTab == "notifications" then
             notificationsContent:Show()
             trackerContent:Hide()
@@ -73,16 +75,25 @@ function SUP.CreateConfigFrame()
             trackerTab:SetEnabled(true)
             -- Reset position button state
             positionTab:SetText("Edit Anchor")
-            if SUP.skillTrackerAnchorFrame and SUP.skillTrackerAnchorFrame:IsShown() then
-                SUP.skillTrackerAnchorFrame:Hide()
+            -- Only hide the tracker if it wasn't previously shown
+            if SUP.skillTrackerDisplay and SUP.skillTrackerDisplay:IsShown() and not SUPConfig.trackerShown then
+                SUP.DebugPrint("Hiding tracker during tab switch because it wasn't previously shown")
+                SUP.skillTrackerDisplay:Hide()
             end
         else
             notificationsContent:Hide()
             trackerContent:Show()
             notificationsTab:SetEnabled(true)
             trackerTab:SetEnabled(false)
-            -- Reset position button state
-            positionTab:SetText("Edit Anchor")
+            -- Set position button text based on tracker state
+            if SUP.skillTrackerDisplay then
+                -- Show the tracker if it was previously shown
+                if SUPConfig.trackerShown then
+                    SUP.DebugPrint("Restoring tracker visibility during tab switch")
+                    SUP.skillTrackerDisplay:Show()
+                end
+                positionTab:SetText(SUP.skillTrackerDisplay:IsShown() and "Hide Tracker" or "Show Tracker")
+            end
             if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
                 SUP.anchorFrame:Hide()
             end
@@ -99,6 +110,11 @@ function SUP.CreateConfigFrame()
             HandlePositionButton(self, "tracker")
         end
     end)
+
+    -- Set initial button text based on saved state
+    if trackerContent:IsShown() then
+        positionTab:SetText(SUPConfig.trackerShown and "Hide Tracker" or "Show Tracker")
+    end
 
     -- Set up tab button scripts
     if notificationsTab then
@@ -308,6 +324,10 @@ function SUP.UpdateSkillList(scrollChild)
             _G.SUPTrackedSkills[skillName] = isChecked
             SUP.DebugPrint(string.format("Skill tracking for %s is now %s", skillName,
                 isChecked and "enabled" or "disabled"))
+            -- Update the skill tracker display
+            if SUP.skillTrackerDisplay then
+                SUP.skillTrackerDisplay:UpdateDisplay()
+            end
         end)
 
         yOffset = yOffset - rowHeight - 2
