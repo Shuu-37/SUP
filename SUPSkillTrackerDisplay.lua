@@ -248,7 +248,7 @@ function SUP.CreateSkillTrackerDisplay()
 
         -- Update container height
         self.skillContainer:SetHeight(math.abs(yOffset))
-        self:SetHeight(math.abs(yOffset) + 10)
+        -- self:SetHeight(math.abs(yOffset) + 10)
     end
 
     -- Add resize update to maintain aspect ratio and update content

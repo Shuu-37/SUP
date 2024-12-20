@@ -274,23 +274,6 @@ function SUP.UpdateSkillList(scrollChild)
     local yOffset = -5
     local rowHeight = 24
 
-    -- Skill categories
-    local primaryProfessions = {
-        ["Alchemy"] = true,
-        ["Blacksmithing"] = true,
-        ["Enchanting"] = true,
-        ["Engineering"] = true,
-        ["Herbalism"] = true,
-        ["Leatherworking"] = true,
-        ["Mining"] = true,
-        ["Skinning"] = true,
-        ["Tailoring"] = true
-    }
-
-    local secondaryProfessions = {
-        ["Cooking"] = true, ["First Aid"] = true, ["Fishing"] = true
-    }
-
     -- Helper function to create skill row
     local function CreateSkillRow(skillName, skillData)
         local row = CreateFrame("Frame", nil, scrollChild)
@@ -315,16 +298,10 @@ function SUP.UpdateSkillList(scrollChild)
         levelText:SetText(string.format("(%d/%d)", skillData.rank, skillData.max))
         levelText:SetTextColor(0.7, 0.7, 0.7, 1)
 
-        -- Set initial checkbox state from saved variable
         checkbox:SetChecked(_G.SUPTrackedSkills[skillName] or false)
-
-        -- Add click handler
         checkbox:SetScript("OnClick", function(self)
             local isChecked = self:GetChecked()
             _G.SUPTrackedSkills[skillName] = isChecked
-            SUP.DebugPrint(string.format("Skill tracking for %s is now %s", skillName,
-                isChecked and "enabled" or "disabled"))
-            -- Update the skill tracker display
             if SUP.skillTrackerDisplay then
                 SUP.skillTrackerDisplay:UpdateDisplay()
             end
@@ -333,63 +310,61 @@ function SUP.UpdateSkillList(scrollChild)
         yOffset = yOffset - rowHeight - 2
     end
 
-    -- Create category headers and add skills
+    -- Add category headers and skills using skillOrder
     local function AddCategoryHeader(text)
-        -- Create a frame to hold both the background and text
         local headerFrame = CreateFrame("Frame", nil, scrollChild)
         headerFrame:SetPoint("TOPLEFT", scrollChild, "TOPLEFT", 0, yOffset)
-        headerFrame:SetSize(320, rowHeight) -- Match your content width
+        headerFrame:SetSize(320, rowHeight)
 
-        -- Create the background texture
         local bg = headerFrame:CreateTexture(nil, "BACKGROUND")
         bg:SetAllPoints()
-        bg:SetColorTexture(0.1, 0.1, 0.1, 0.8) -- Dark semi-transparent background
-        -- Alternative: Use a gradient
-        -- bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0.8, 0.1, 0.1, 0.1, 0)
+        bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
 
-        -- Create the text
         local header = headerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         header:SetPoint("LEFT", headerFrame, "LEFT", 5, 0)
         header:SetText(text)
 
-        yOffset = yOffset - (rowHeight)
+        yOffset = yOffset - rowHeight
     end
 
-    -- Add Primary Professions if they exist
-    local hasPrimarySkills = false
-    for skillName, skillData in pairs(currentSkills) do
-        if primaryProfessions[skillName] then
-            if not hasPrimarySkills then
-                AddCategoryHeader("Primary Professions")
-                hasPrimarySkills = true
-            end
-            CreateSkillRow(skillName, skillData)
+    -- Track current category
+    local currentCategory = nil
+    local categoryHasSkills = false
+
+    -- Helper function to determine category
+    local function GetSkillCategory(skillName)
+        if skillName == "Defense" or skillName == "Axes" or skillName == "Bows" or
+            skillName == "Crossbows" or skillName == "Daggers" or skillName == "Fist Weapons" or
+            skillName == "Guns" or skillName == "Maces" or skillName == "Polearms" or
+            skillName == "Staves" or skillName == "Swords" or skillName == "Thrown" or
+            skillName == "Two-Handed Axes" or skillName == "Two-Handed Maces" or
+            skillName == "Two-Handed Swords" or skillName == "Unarmed" or skillName == "Wands" then
+            return "Weapon Skills"
+        elseif skillName == "Cooking" or skillName == "First Aid" or skillName == "Fishing" then
+            return "Secondary Professions"
+        else
+            return "Primary Professions"
         end
     end
 
-    -- Add Secondary Professions if they exist
-    local hasSecondarySkills = false
-    for skillName, skillData in pairs(currentSkills) do
-        if secondaryProfessions[skillName] then
-            if not hasSecondarySkills then
-                yOffset = yOffset - 10
-                AddCategoryHeader("Secondary Professions")
-                hasSecondarySkills = true
-            end
-            CreateSkillRow(skillName, skillData)
-        end
-    end
+    -- Process skills in order from SUP.skillOrder
+    for _, skillName in ipairs(SUP.skillOrder) do
+        local skillData = currentSkills[skillName]
+        if skillData then
+            local category = GetSkillCategory(skillName)
 
-    -- Add Weapon Skills if they exist
-    local hasWeaponSkills = false
-    for skillName, skillData in pairs(currentSkills) do
-        if not primaryProfessions[skillName] and not secondaryProfessions[skillName] then
-            if not hasWeaponSkills then
-                yOffset = yOffset - 10
-                AddCategoryHeader("Weapon Skills")
-                hasWeaponSkills = true
+            -- Add category header if needed
+            if currentCategory ~= category then
+                if currentCategory and categoryHasSkills then
+                    yOffset = yOffset - 10 -- Add spacing between categories
+                end
+                AddCategoryHeader(category)
+                currentCategory = category
+                categoryHasSkills = false
             end
+
             CreateSkillRow(skillName, skillData)
+            categoryHasSkills = true
         end
     end
 

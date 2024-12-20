@@ -25,22 +25,22 @@ SUP.skillOrder = {
     "Fishing",
 
     -- Weapon Skills
-    "Defense",
     "Axes",
-    "Two-Handed Axes",
+    "Bows",
+    "Crossbows",
     "Daggers",
+    "Defense",
+    "Fist Weapons",
+    "Guns",
     "Maces",
-    "Two-Handed Maces",
     "Polearms",
     "Staves",
     "Swords",
-    "Two-Handed Swords",
-    "Fist Weapons",
-    "Unarmed",
-    "Bows",
-    "Crossbows",
-    "Guns",
     "Thrown",
+    "Two-Handed Axes",
+    "Two-Handed Maces",
+    "Two-Handed Swords",
+    "Unarmed",
     "Wands"
 }
 
