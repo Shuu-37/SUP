@@ -28,7 +28,7 @@ function SUP.CreateConfigFrame()
     local positionButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
     positionButton:SetSize(100, 22)
     positionButton:SetPoint("TOPLEFT", frame.tabContainer, "TOPRIGHT", -60, 0)
-    positionButton:SetText("Edit Position")
+    positionButton:SetText("Edit Anchor")
 
     -- Function to handle position button clicks based on current tab
     local function HandlePositionButton(self, currentTab)
@@ -41,10 +41,10 @@ function SUP.CreateConfigFrame()
             SUP.anchorFrame:UpdateSize()
             if not SUP.anchorFrame:IsShown() then
                 SUP.anchorFrame:Show()
-                self:SetText("Save Position")
+                self:SetText("Save Anchor")
             else
                 SUP.anchorFrame:Hide()
-                self:SetText("Edit Position")
+                self:SetText("Edit Anchor")
             end
         else
             -- Handle tracker anchor
@@ -55,10 +55,10 @@ function SUP.CreateConfigFrame()
             SUP.skillTrackerAnchorFrame:UpdateSize()
             if not SUP.skillTrackerAnchorFrame:IsShown() then
                 SUP.skillTrackerAnchorFrame:Show()
-                self:SetText("Save Position")
+                self:SetText("Save Anchor")
             else
                 SUP.skillTrackerAnchorFrame:Hide()
-                self:SetText("Edit Position")
+                self:SetText("Edit Anchor")
             end
         end
     end
@@ -71,7 +71,7 @@ function SUP.CreateConfigFrame()
             notificationsTab:SetEnabled(false)
             trackerTab:SetEnabled(true)
             -- Reset position button state
-            positionButton:SetText("Edit Position")
+            positionButton:SetText("Edit Anchor")
             if SUP.skillTrackerAnchorFrame and SUP.skillTrackerAnchorFrame:IsShown() then
                 SUP.skillTrackerAnchorFrame:Hide()
             end
@@ -81,7 +81,7 @@ function SUP.CreateConfigFrame()
             notificationsTab:SetEnabled(true)
             trackerTab:SetEnabled(false)
             -- Reset position button state
-            positionButton:SetText("Edit Position")
+            positionButton:SetText("Edit Anchor")
             if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
                 SUP.anchorFrame:Hide()
             end
