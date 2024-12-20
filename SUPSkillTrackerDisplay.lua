@@ -52,7 +52,7 @@ function SUP.CreateSkillTrackerDisplay()
                 visibleEntries = visibleEntries + 1
             end
         end
-        local spacing = SUPConfig.trackerStyle.spacing or 2
+        local spacing = SUPConfig.trackerStyle.spacing or MIN_SPACING
         return (MIN_ENTRY_HEIGHT * visibleEntries) +
             (spacing * math.max(0, visibleEntries - 1)) +
             10 -- padding
@@ -261,8 +261,24 @@ function SUP.CreateSkillTrackerDisplay()
         end
 
         -- Update container height
-        self.skillContainer:SetHeight(math.abs(yOffset))
-        -- self:SetHeight(math.abs(yOffset) + 10)
+        SUP.DebugPrint("Final yOffset before SetHeight:", yOffset)
+        if yOffset then
+            self.skillContainer:SetHeight(math.abs(yOffset))
+            SUP.DebugPrint("Container height set to:", math.abs(yOffset))
+
+            -- Update frame height to match content
+            local minHeight = GetMinimumHeight()
+            local newHeight = math.max(minHeight, math.abs(yOffset) + 10)
+            self:SetHeight(newHeight)
+            SUP.DebugPrint("Frame height updated to:", newHeight)
+
+            -- Save the new size
+            SUPConfig.trackerSize.height = newHeight
+        else
+            SUP.DebugPrint("Warning: yOffset is nil!")
+            self:SetHeight(MIN_HEIGHT)
+            SUPConfig.trackerSize.height = MIN_HEIGHT
+        end
     end
 
     -- Add resize update to maintain aspect ratio and update content
@@ -390,7 +406,7 @@ function SUP.CreateSkillTrackerDisplay()
     -- Initialize entries table
     frame.entries = {}
 
-    -- Position the frame using saved position
+    -- Position the frame using saved position or default to center
     if SUPConfig.skillTrackerPosition then
         frame:ClearAllPoints()
         frame:SetPoint(
@@ -400,6 +416,17 @@ function SUP.CreateSkillTrackerDisplay()
             SUPConfig.skillTrackerPosition.x or 0,
             SUPConfig.skillTrackerPosition.y or 0
         )
+    else
+        -- Set default position to center of screen
+        frame:ClearAllPoints()
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        -- Save the default position
+        SUPConfig.skillTrackerPosition = {
+            point = "CENTER",
+            relativePoint = "CENTER",
+            x = 0,
+            y = 0
+        }
     end
 
     -- Update when skills change
