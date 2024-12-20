@@ -16,7 +16,7 @@ SUP.trackableSkills = {
     "Cooking", "First Aid", "Fishing",
 
     -- Weapon Skills
-    "Defense", "Daggers", "Fist Weapons", "One-Handed Axes", "Maces",
+    "Defense", "Daggers", "Fist Weapons", "Axes", "Maces",
     "Swords",
     "Polearms", "Staves", "Two-Handed Axes",
     "Two-Handed Maces", "Two-Handed Swords", "Bows", "Crossbows",
@@ -45,7 +45,7 @@ SUP.skillIcons = {
     Defense = "Interface\\Icons\\Ability_Defend",
     Daggers = "Interface\\Icons\\INV_Weapon_ShortBlade_01",
     ["Fist Weapons"] = "Interface\\Icons\\INV_Gauntlets_04",
-    ["One-Handed Axes"] = "Interface\\Icons\\INV_Axe_01",
+    Axes = "Interface\\Icons\\INV_Axe_01",
     Maces = "Interface\\Icons\\INV_Mace_01",
     Swords = "Interface\\Icons\\INV_Sword_04",
     Polearms = "Interface\\Icons\\INV_Spear_06",
@@ -73,11 +73,11 @@ function SUP.SkillTracker.ScanSkills()
 
     -- Scan all skill lines
     for i = 1, L.GetNumSkillLines() do
-        local name, isHeader, _, rank = L.GetSkillLineInfo(i)
+        local name, isHeader, _, rank, _, _, maxRank = L.GetSkillLineInfo(i)
         if not isHeader then
             for _, trackableSkill in ipairs(SUP.trackableSkills) do
                 if name and name == trackableSkill then
-                    skillData[name] = { name = name, rank = rank }
+                    skillData[name] = { name = name, rank = rank, max = maxRank }
                     break
                 end
             end
@@ -99,10 +99,18 @@ function SUP.SkillTracker.CheckForUpdates()
     -- Compare with last known skills
     for skillId, currentData in pairs(currentSkills) do
         local lastKnown = SUP.lastKnownSkills[skillId]
-        if lastKnown and currentData.rank > lastKnown.rank then
-            SUP.DebugPrint(string.format("Skill up detected: %s (%d -> %d)",
-                currentData.name, lastKnown.rank, currentData.rank))
-            SUP.ShowNotification(currentData.name, currentData.rank)
+        if lastKnown then
+            -- Check for skill level up
+            if currentData.rank > lastKnown.rank then
+                SUP.DebugPrint(string.format("Skill up detected: %s (%d -> %d)",
+                    currentData.name, lastKnown.rank, currentData.rank))
+                SUP.ShowNotification(currentData.name, currentData.rank)
+            end
+            -- Check for max level change
+            if currentData.max ~= lastKnown.max then
+                SUP.DebugPrint(string.format("Max level changed for %s: %d -> %d",
+                    currentData.name, lastKnown.max, currentData.max))
+            end
         end
     end
 
