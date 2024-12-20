@@ -15,7 +15,9 @@ function SUP.CreateSkillTrackerDisplay()
     -- Create the main container frame
     local frame = L.CreateFrame("Frame", "SUPSkillTrackerDisplay", UIParent, "BackdropTemplate")
     Mixin(frame, BackdropTemplateMixin)
-    frame:SetSize(SUPConfig.trackerSize.width, SUPConfig.trackerSize.height)
+
+    -- Set size using individual width and height values
+    frame:SetSize(200, 150) -- Set initial size
     frame:Hide()
 
     -- Make it movable like other frames

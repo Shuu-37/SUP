@@ -6,23 +6,49 @@ SUP.SkillTracker = {}
 SUP.lastKnownSkills = {}
 _G.SUPTrackedSkills = _G.SUPTrackedSkills or {}
 
--- Add trackable skills table
-SUP.trackableSkills = {
+-- Add trackable skills table with proper ordering
+SUP.skillOrder = {
     -- Primary Professions
-    "Alchemy", "Blacksmithing", "Enchanting", "Engineering",
-    "Herbalism", "Leatherworking", "Mining",
-    "Skinning", "Tailoring",
+    "Alchemy",
+    "Blacksmithing",
+    "Enchanting",
+    "Engineering",
+    "Herbalism",
+    "Leatherworking",
+    "Mining",
+    "Skinning",
+    "Tailoring",
 
     -- Secondary Professions
-    "Cooking", "First Aid", "Fishing",
+    "Cooking",
+    "First Aid",
+    "Fishing",
 
     -- Weapon Skills
-    "Defense", "Daggers", "Fist Weapons", "Axes", "Maces",
+    "Defense",
+    "Axes",
+    "Two-Handed Axes",
+    "Daggers",
+    "Maces",
+    "Two-Handed Maces",
+    "Polearms",
+    "Staves",
     "Swords",
-    "Polearms", "Staves", "Two-Handed Axes",
-    "Two-Handed Maces", "Two-Handed Swords", "Bows", "Crossbows",
-    "Guns", "Thrown", "Wands", "Unarmed"
+    "Two-Handed Swords",
+    "Fist Weapons",
+    "Unarmed",
+    "Bows",
+    "Crossbows",
+    "Guns",
+    "Thrown",
+    "Wands"
 }
+
+-- Update trackable skills to match the new order
+SUP.trackableSkills = {}
+for _, skillName in ipairs(SUP.skillOrder) do
+    table.insert(SUP.trackableSkills, skillName)
+end
 
 -- Add skill icons
 SUP.skillIcons = {
@@ -44,22 +70,22 @@ SUP.skillIcons = {
 
     -- Weapon Skills
     Defense = "Interface\\Icons\\Ability_Defend",
-    Daggers = "Interface\\Icons\\INV_Weapon_ShortBlade_01",
-    ["Fist Weapons"] = "Interface\\Icons\\INV_Gauntlets_04",
     Axes = "Interface\\Icons\\INV_Axe_01",
+    ["Two-Handed Axes"] = "Interface\\Icons\\INV_Axe_09",
+    Daggers = "Interface\\Icons\\INV_Weapon_ShortBlade_01",
     Maces = "Interface\\Icons\\INV_Mace_01",
-    Swords = "Interface\\Icons\\INV_Sword_04",
+    ["Two-Handed Maces"] = "Interface\\Icons\\INV_Hammer_05",
     Polearms = "Interface\\Icons\\INV_Spear_06",
     Staves = "Interface\\Icons\\INV_Staff_02",
-    ["Two-Handed Axes"] = "Interface\\Icons\\INV_Axe_09",
-    ["Two-Handed Maces"] = "Interface\\Icons\\INV_Hammer_05",
+    Swords = "Interface\\Icons\\INV_Sword_04",
     ["Two-Handed Swords"] = "Interface\\Icons\\INV_Sword_04",
+    ["Fist Weapons"] = "Interface\\Icons\\INV_Gauntlets_04",
+    Unarmed = "Interface\\Icons\\INV_Gauntlets_04",
     Bows = "Interface\\Icons\\INV_Weapon_Bow_07",
     Crossbows = "Interface\\Icons\\INV_Weapon_Crossbow_02",
     Guns = "Interface\\Icons\\INV_Weapon_Rifle_01",
     Thrown = "Interface\\Icons\\INV_ThrowingKnife_02",
-    Wands = "Interface\\Icons\\INV_Wand_01",
-    Unarmed = "Interface\\Icons\\INV_Gauntlets_04"
+    Wands = "Interface\\Icons\\INV_Wand_01"
 }
 
 function SUP.SkillTracker.GetProfessionLevel(index)
