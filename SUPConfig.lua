@@ -114,13 +114,17 @@ function SUP.CreateConfigFrame()
     end
 
     -- Set version text
-    local versionText = SUP.Utils.GetFrameElement(frame, "Version")
+    local versionText = SUP.Utils.GetFrameElement(frame, "$parentVersion")
     if versionText then
         local version = L.GetAddOnMetadata(addonName, "Version") or "Unknown"
         versionText:SetText("v" .. version)
-        SUP.DebugPrint("Version text set to:", version)
+        -- Add debug prints to help diagnose the issue
+        SUP.DebugPrint("Version text element found:", versionText)
+        SUP.DebugPrint("Setting version text to:", "v" .. version)
     else
         SUP.DebugPrint("Could not find version text element")
+        -- Add additional debug info
+        SUP.DebugPrint("Frame elements available:", frame:GetChildren())
     end
 
     -- Initialize sound dropdown

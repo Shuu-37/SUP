@@ -25,5 +25,13 @@ end
 
 -- For elements that are direct children of the main frame
 function SUP.Utils.GetFrameElement(frame, elementName)
+    -- Replace $parent with the actual frame name
+    local actualName = elementName:gsub("$parent", frame:GetName())
+    -- Try to get the element by name first
+    local element = _G[actualName]
+    if element then
+        return element
+    end
+    -- Fallback to direct child lookup if global lookup fails
     return SUP.Utils.GetElement(frame, elementName)
 end
