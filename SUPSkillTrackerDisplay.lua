@@ -28,7 +28,7 @@ function SUP.CreateSkillTrackerDisplay()
     -- Set up resizing with dynamic minimum size based on entries
     local MIN_ENTRY_HEIGHT = 25 -- Minimum height per entry
     local MIN_SPACING = 2       -- Minimum spacing between entries
-    local BAR_OFFSET = 4        -- Fixed offset for progress bars below content
+    local BAR_OFFSET = 2        -- Fixed offset for progress bars below content
     local MIN_WIDTH = 150
     local MIN_HEIGHT = 100
     local ASPECT_RATIO = MIN_WIDTH / MIN_HEIGHT
@@ -171,12 +171,24 @@ function SUP.CreateSkillTrackerDisplay()
 
         -- Create sorted list of tracked skills
         local sortedSkills = {}
-        for skillName, skillData in pairs(currentSkills) do
-            if _G.SUPTrackedSkills[skillName] then
-                table.insert(sortedSkills, { name = skillName, data = skillData })
+        local currentSkills = SUP.SkillTracker.ScanSkills()
+
+        -- Get skills in the same order as they appear in the game's skill list
+        local orderedSkills = {}
+        for i = 1, L.GetNumSkillLines() do
+            local name, isHeader = L.GetSkillLineInfo(i)
+            if not isHeader and currentSkills[name] and _G.SUPTrackedSkills[name] then
+                table.insert(orderedSkills, name)
             end
         end
-        table.sort(sortedSkills, function(a, b) return a.name < b.name end)
+
+        -- Add skills in the original game order
+        for _, skillName in ipairs(orderedSkills) do
+            table.insert(sortedSkills, {
+                name = skillName,
+                data = currentSkills[skillName]
+            })
+        end
 
         -- Hide all existing entries
         for _, child in pairs({ self.skillContainer:GetChildren() }) do

@@ -118,3 +118,12 @@ function SUP.SkillTracker.CheckForUpdates()
     -- Update last known skills
     SUP.lastKnownSkills = currentSkills
 end
+
+function SUP.GetSkillIndex(skillName)
+    for index, skill in ipairs(SUP.trackableSkills) do
+        if skill == skillName then
+            return index
+        end
+    end
+    return 999 -- fallback for any skills not in the list
+end
