@@ -32,7 +32,9 @@ SUP.skillOrder = {
     "Defense",
     "Fist Weapons",
     "Guns",
+    "Lockpicking",
     "Maces",
+    "Poisons",
     "Polearms",
     "Staves",
     "Swords",
@@ -85,7 +87,9 @@ SUP.skillIcons = {
     Crossbows = "Interface\\Icons\\INV_Weapon_Crossbow_02",
     Guns = "Interface\\Icons\\INV_Weapon_Rifle_01",
     Thrown = "Interface\\Icons\\INV_ThrowingKnife_02",
-    Wands = "Interface\\Icons\\INV_Wand_01"
+    Wands = "Interface\\Icons\\INV_Wand_01",
+    Lockpicking = "Interface\\Icons\\Spell_Nature_MoonKey",
+    Poisons = "Interface\\Icons\\Trade_BrewPoison"
 }
 
 function SUP.SkillTracker.GetProfessionLevel(index)

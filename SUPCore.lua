@@ -21,6 +21,7 @@ SUPConfig = SUPConfig or {
         height = 150
     },
     playSound = true,
+    sound = "Skill Up",
     soundKitID = 6295,             -- Profession skill up sound
     duration = 1.0,
     trackerDisplayVisible = false, -- Add this new variable for initial visibility state
@@ -61,7 +62,8 @@ local function RegisterSlashCommands()
                     height = 150
                 },
                 playSound = true,
-                soundKitID = 3081,
+                sound = "Skill Up",
+                soundKitID = 6295,
                 duration = 1.0,
                 trackerDisplayVisible = false,
                 trackerStyle = {

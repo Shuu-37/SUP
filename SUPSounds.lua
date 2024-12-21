@@ -29,9 +29,11 @@ end
 
 if not _G.SUPConfig.sound then
     _G.SUPConfig.sound = "Skill Up"
+    _G.SUPConfig.soundKitID = SUP.SOUND_OPTIONS["Skill Up"]
 end
 
 -- Validate saved sound exists in options
 if _G.SUPConfig.sound and not SUP.SOUND_OPTIONS[_G.SUPConfig.sound] then
-    _G.SUPConfig.sound = "Skill Up" -- Reset to default if saved sound is invalid
+    _G.SUPConfig.sound = "Skill Up"
+    _G.SUPConfig.soundKitID = SUP.SOUND_OPTIONS["Skill Up"]
 end
