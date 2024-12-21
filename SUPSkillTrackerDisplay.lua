@@ -282,7 +282,7 @@ function SUP.CreateSkillTrackerDisplay()
 
             -- Update frame height to match content plus padding
             local minHeight = GetMinimumHeight()
-            local newHeight = math.max(minHeight, totalHeight + 10)
+            local newHeight = math.max(minHeight, totalHeight)
             self:SetHeight(newHeight)
             SUPConfig.trackerSize.height = newHeight
         else
