@@ -10,7 +10,16 @@ SUPConfig = SUPConfig or {
     showIcon = true,
     debugMode = false,
     position = { x = 0, y = 0 },
-    skillTrackerPosition = { x = 0, y = 0 },
+    skillTrackerPosition = {
+        point = "CENTER",
+        relativePoint = "CENTER",
+        x = 0,
+        y = 0
+    },
+    trackerSize = {
+        width = 200,
+        height = 150
+    },
     playSound = true,
     soundKitID = 6295,             -- Profession skill up sound
     duration = 1.0,
@@ -35,10 +44,24 @@ local function RegisterSlashCommands()
                 fontSize = 14,
                 showIcon = true,
                 debugMode = false,
-                position = { x = 0, y = 0 },
-                skillTrackerPosition = { x = 0, y = 0 },
+                position = {
+                    point = "CENTER",
+                    relativePoint = "CENTER",
+                    x = 0,
+                    y = 0
+                },
+                skillTrackerPosition = {
+                    point = "CENTER",
+                    relativePoint = "CENTER",
+                    x = 0,
+                    y = 0
+                },
+                trackerSize = {
+                    width = 200,
+                    height = 150
+                },
                 playSound = true,
-                soundKitID = 6295,
+                soundKitID = 3081,
                 duration = 1.0,
                 trackerDisplayVisible = false,
                 trackerStyle = {
@@ -50,6 +73,21 @@ local function RegisterSlashCommands()
                 }
             }
             SUPTrackedSkills = {}
+
+            -- Force position update if tracker exists
+            if SUP.skillTrackerDisplay then
+                SUP.skillTrackerDisplay:ClearAllPoints()
+                SUP.skillTrackerDisplay:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+                SUP.skillTrackerDisplay:Hide()
+            end
+
+            -- Force position update if anchor frame exists
+            if SUP.anchorFrame then
+                SUP.anchorFrame:ClearAllPoints()
+                SUP.anchorFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+                SUP.anchorFrame:Hide()
+            end
+
             print("SUP: All saved variables have been reset to defaults. Please /reload to apply changes.")
             return
         end
