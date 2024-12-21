@@ -73,30 +73,28 @@ function SUP.CreateConfigFrame()
             trackerContent:Hide()
             notificationsTab:SetEnabled(false)
             trackerTab:SetEnabled(true)
+            -- Always reset position button to Edit Anchor for notifications tab
             positionTab:SetText("Edit Anchor")
-        else
+        else -- tracker tab
             notificationsContent:Hide()
             trackerContent:Show()
             notificationsTab:SetEnabled(true)
             trackerTab:SetEnabled(false)
 
-            -- Set position button text based on saved tracker visibility state
-            if SUP.skillTrackerDisplay then
-                positionTab:SetText(SUPConfig.trackerDisplayVisible and "Hide Tracker" or "Show Tracker")
-                -- Update tracker visibility based on saved state
-                if SUPConfig.trackerDisplayVisible then
-                    SUP.skillTrackerDisplay:Show()
-                else
-                    SUP.skillTrackerDisplay:Hide()
-                end
-            end
-
+            -- Hide anchor frame if it exists and is shown
             if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
                 SUP.anchorFrame:Hide()
             end
 
+            -- Set position button text based on current tracker visibility
+            if SUP.skillTrackerDisplay then
+                positionTab:SetText(SUPConfig.trackerDisplayVisible and "Hide Tracker" or "Show Tracker")
+            end
+
             SUP.UpdateSkillList(trackerContent.scrollFrame.content)
         end
+
+        SUP.DebugPrint("Tab switch complete. Tracker visible:", SUPConfig.trackerDisplayVisible)
     end
 
     -- Set up position button click handler
