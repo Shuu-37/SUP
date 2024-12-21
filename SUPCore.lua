@@ -12,15 +12,49 @@ SUPConfig = SUPConfig or {
     position = { x = 0, y = 0 },
     skillTrackerPosition = { x = 0, y = 0 },
     playSound = true,
-    soundKitID = 6295,            -- Profession skill up sound
+    soundKitID = 6295,             -- Profession skill up sound
     duration = 1.0,
-    trackerDisplayVisible = false -- Add this new variable for initial visibility state
+    trackerDisplayVisible = false, -- Add this new variable for initial visibility state
+    trackerStyle = {               -- Add default tracker style settings
+        spacing = 2,               -- MIN_SPACING
+        iconSize = 20.5,
+        fontSize = 12.0,
+        barHeight = 2,
+        entryHeight = 25 -- MIN_ENTRY_HEIGHT
+    }
 }
 
 -- Register slash commands after ADDON_LOADED
 local function RegisterSlashCommands()
     SLASH_SUP1 = "/sup"
+    SLASH_SUP2 = "/sup reset"
     SlashCmdList["SUP"] = function(msg)
+        if msg == "reset" then
+            -- Reset all saved variables
+            SUPConfig = {
+                fontSize = 14,
+                showIcon = true,
+                debugMode = false,
+                position = { x = 0, y = 0 },
+                skillTrackerPosition = { x = 0, y = 0 },
+                playSound = true,
+                soundKitID = 6295,
+                duration = 1.0,
+                trackerDisplayVisible = false,
+                trackerStyle = {
+                    spacing = 2,
+                    iconSize = 20.5,
+                    fontSize = 12.0,
+                    barHeight = 2,
+                    entryHeight = 25
+                }
+            }
+            SUPTrackedSkills = {}
+            print("SUP: All saved variables have been reset to defaults. Please /reload to apply changes.")
+            return
+        end
+
+        -- Original command handling
         SUP.DebugPrint("Slash command received")
         if SUP.configFrame then
             SUP.DebugPrint("Showing existing config frame")
