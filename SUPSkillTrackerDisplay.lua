@@ -23,6 +23,12 @@ function SUP.CreateSkillTrackerDisplay()
         barHeight = 2,
         entryHeight = MIN_ENTRY_HEIGHT
     }
+    SUPConfig.skillTrackerPosition = SUPConfig.skillTrackerPosition or {
+        point = "CENTER",
+        relativePoint = "CENTER",
+        x = 0,
+        y = 0
+    }
 
     -- Set size using individual width and height values
     frame:SetSize(200, 150) -- Set initial size
@@ -34,6 +40,10 @@ function SUP.CreateSkillTrackerDisplay()
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+
+    -- Always set to center first, then apply saved position if it exists
+    frame:ClearAllPoints()
+    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 
     -- Function to calculate minimum height based on visible entries
     local function GetMinimumHeight()
@@ -374,9 +384,20 @@ function SUP.CreateSkillTrackerDisplay()
                 entry:SetPoint("TOPLEFT", skillContainer, "TOPLEFT", 0, yOffset)
                 entry:SetWidth(skillContainer:GetWidth())
 
-                -- Update bar height only
+                -- Update bar height and width
                 entry.barBg:SetHeight(math.max(1, barHeight))
                 entry.barFg:SetHeight(math.max(1, barHeight))
+
+                -- Update progress bar width based on current progress
+                local barWidth = entry.barBg:GetWidth()
+                if barWidth and barWidth > 0 then
+                    local currentSkills = SUP.SkillTracker.ScanSkills()
+                    local skillData = currentSkills[skillName]
+                    if skillData and skillData.rank and skillData.max then
+                        local progress = math.min(1, math.max(0, skillData.rank / skillData.max))
+                        entry.barFg:SetWidth(math.max(1, barWidth * progress))
+                    end
+                end
 
                 -- Update spacing for next entry
                 yOffset = yOffset - (newEntryHeight + spacing)
