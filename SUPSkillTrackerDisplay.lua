@@ -353,8 +353,10 @@ function SUP.CreateSkillTrackerDisplay()
         -- Update debug output with actual values being used
         SUP.DebugPrint(string.format("Sizes - Icon: %.1f, Font: %.1f, Bar: %.1f",
             iconSize, fontSize, SUPConfig.trackerStyle.barHeight))
-        SUP.DebugPrint(string.format("Frame size: %d x %d (min height: %d)", width, height, minHeight))
-        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f", visibleEntries, newEntryHeight))
+        SUP.DebugPrint(string.format("Frame size: %.0f x %.0f (min height: %.0f)",
+            width or 0, height or 0, minHeight or 0))
+        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f",
+            visibleEntries, newEntryHeight))
 
         -- Update container size
         skillContainer:SetWidth(width - 16)
