@@ -53,12 +53,12 @@ function SUP.CreateConfigFrame()
                 if not SUP.skillTrackerDisplay:IsShown() then
                     SUP.DebugPrint("Showing tracker display")
                     SUP.skillTrackerDisplay:Show()
-                    SUPConfig.trackerShown = true
+                    SUPConfig.trackerDisplayVisible = true
                     self:SetText("Hide Tracker")
                 else
                     SUP.DebugPrint("Hiding tracker display")
                     SUP.skillTrackerDisplay:Hide()
-                    SUPConfig.trackerShown = false
+                    SUPConfig.trackerDisplayVisible = false
                     self:SetText("Show Tracker")
                 end
             end
@@ -73,31 +73,28 @@ function SUP.CreateConfigFrame()
             trackerContent:Hide()
             notificationsTab:SetEnabled(false)
             trackerTab:SetEnabled(true)
-            -- Reset position button state
             positionTab:SetText("Edit Anchor")
-            -- Only hide the tracker if it wasn't previously shown
-            if SUP.skillTrackerDisplay and SUP.skillTrackerDisplay:IsShown() and not SUPConfig.trackerShown then
-                SUP.DebugPrint("Hiding tracker during tab switch because it wasn't previously shown")
-                SUP.skillTrackerDisplay:Hide()
-            end
         else
             notificationsContent:Hide()
             trackerContent:Show()
             notificationsTab:SetEnabled(true)
             trackerTab:SetEnabled(false)
-            -- Set position button text based on tracker state
+
+            -- Set position button text based on saved tracker visibility state
             if SUP.skillTrackerDisplay then
-                -- Show the tracker if it was previously shown
-                if SUPConfig.trackerShown then
-                    SUP.DebugPrint("Restoring tracker visibility during tab switch")
+                positionTab:SetText(SUPConfig.trackerDisplayVisible and "Hide Tracker" or "Show Tracker")
+                -- Update tracker visibility based on saved state
+                if SUPConfig.trackerDisplayVisible then
                     SUP.skillTrackerDisplay:Show()
+                else
+                    SUP.skillTrackerDisplay:Hide()
                 end
-                positionTab:SetText(SUP.skillTrackerDisplay:IsShown() and "Hide Tracker" or "Show Tracker")
             end
+
             if SUP.anchorFrame and SUP.anchorFrame:IsShown() then
                 SUP.anchorFrame:Hide()
             end
-            -- Update skill list when switching to tracker tab
+
             SUP.UpdateSkillList(trackerContent.scrollFrame.content)
         end
     end
@@ -113,7 +110,7 @@ function SUP.CreateConfigFrame()
 
     -- Set initial button text based on saved state
     if trackerContent:IsShown() then
-        positionTab:SetText(SUPConfig.trackerShown and "Hide Tracker" or "Show Tracker")
+        positionTab:SetText(SUPConfig.trackerDisplayVisible and "Hide Tracker" or "Show Tracker")
     end
 
     -- Set up tab button scripts

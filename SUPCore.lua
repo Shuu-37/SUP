@@ -12,8 +12,9 @@ SUPConfig = SUPConfig or {
     position = { x = 0, y = 0 },
     skillTrackerPosition = { x = 0, y = 0 },
     playSound = true,
-    soundKitID = 6295, -- Profession skill up sound
-    duration = 1.0
+    soundKitID = 6295,            -- Profession skill up sound
+    duration = 1.0,
+    trackerDisplayVisible = false -- Add this new variable for initial visibility state
 }
 
 -- Register slash commands after ADDON_LOADED
@@ -67,9 +68,9 @@ SUP.frame:SetScript("OnEvent", function(self, event, ...)
             SUP.anchorFrame = SUP.CreateAnchorFrame()
         end
         SUP.SkillTracker.Initialize()
-        -- Create and show the skill tracker display
+        -- Create the skill tracker display and set initial visibility
         SUP.skillTrackerDisplay = SUP.CreateSkillTrackerDisplay()
-        SUP.skillTrackerDisplay:Show()
+        -- Initial visibility is handled in CreateSkillTrackerDisplay now
     elseif event == "SKILL_LINES_CHANGED" then
         SUP.SkillTracker.CheckForUpdates()
     end

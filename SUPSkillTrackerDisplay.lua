@@ -15,7 +15,6 @@ function SUP.CreateSkillTrackerDisplay()
     frame:SetResizable(true)
 
     -- Initialize saved variables if they don't exist
-    SUPConfig.trackerShown = SUPConfig.trackerShown or false
     SUPConfig.trackerSize = SUPConfig.trackerSize or { width = 200, height = 150 }
     SUPConfig.trackerStyle = SUPConfig.trackerStyle or {
         spacing = MIN_SPACING,
@@ -391,8 +390,8 @@ function SUP.CreateSkillTrackerDisplay()
 
         -- Debug output with nil checks
         if width and height and minHeight then
-            SUP.DebugPrint(string.format("Frame size: %d x %d (min height: %d)",
-                math.floor(width), math.floor(height), math.floor(minHeight)))
+            SUP.DebugPrint(string.format("Frame size: %.0f x %.0f (min height: %.0f)",
+                width or 0, height or 0, minHeight or 0))
         end
     end)
 
@@ -422,15 +421,22 @@ function SUP.CreateSkillTrackerDisplay()
         }
     end
 
+    -- Set initial visibility based on saved state
+    if SUPConfig.trackerDisplayVisible then
+        frame:Show()
+    else
+        frame:Hide()
+    end
+
     -- Add debug logging for visibility changes
     frame:HookScript("OnShow", function()
         SUP.DebugPrint("Tracker frame shown")
-        SUPConfig.trackerShown = true
+        SUPConfig.trackerDisplayVisible = true
     end)
 
     frame:HookScript("OnHide", function()
         SUP.DebugPrint("Tracker frame hidden")
-        SUPConfig.trackerShown = false
+        SUPConfig.trackerDisplayVisible = false
     end)
 
     frame:SetScript("OnDragStop", function(self)
