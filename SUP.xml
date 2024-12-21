@@ -90,7 +90,6 @@
                         </Anchors>
                         <Scripts>
                             <OnLoad>
-                                print("SUP: Main Config Frame Loading...");
                                 --self:SetBackdrop({
                                 --bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
                                 --edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -113,7 +112,6 @@
                                 </Anchors>
                                 <Scripts>
                                     <OnLoad>
-                                        print("SUP: Font Slider Loaded");
                                         self:SetMinMaxValues(8, 32)
                                         self:SetValueStep(1)
                                         _G[self:GetName().."Low"]:SetText("8")
@@ -134,7 +132,6 @@
                                 </Anchors>
                                 <Scripts>
                                     <OnLoad>
-                                        print("SUP: Duration Slider Loaded");
                                         self:SetMinMaxValues(1.0, 8.0)
                                         self:SetValueStep(0.1)
                                         _G[self:GetName().."Low"]:SetText("1.0s")
@@ -267,7 +264,6 @@
                 </Layers>
                 <Scripts>
                     <OnLoad>
-                        print("SUP: Close Button Loaded");
                     </OnLoad>
                     <OnClick>
                         self:GetParent():Hide()
@@ -296,7 +292,6 @@
                 </Layers>
                 <Scripts>
                     <OnLoad>
-                        print("SUP: Debug Button Loading...");
                         self.active = SUPConfig.debugMode;
                         -- Set initial state
                         if self.active then
@@ -339,7 +334,6 @@
                 </Layers>
                 <Scripts>
                     <OnLoad>
-                        print("SUP: Reload Button Loading...");
                         -- Hide initially if debug mode is off
                         if not SUPConfig.debugMode then
                         self:Hide()

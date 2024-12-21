@@ -158,14 +158,20 @@ function SUP.CreateSkillTrackerDisplay()
         -- Function to update the entry's progress
         function entry:UpdateProgress(current, max)
             if not current or not max then return end -- Guard against nil values
+
+            -- Update text first
             self.levelText:SetText(string.format("%d/%d", current, max))
-            local width = self.barBg:GetWidth()
-            if width > 0 then                                                   -- Only update if we have a valid width
-                local progress = math.min(1, math.max(0, current / max))
-                local barWidth = math.min(width, math.max(1, width * progress)) -- Ensure fg never exceeds bg
-                self.barFg:SetWidth(barWidth)
-            else
-                self.barFg:SetWidth(1) -- Set minimum width if background width isn't ready
+
+            -- Only update bar if we have valid references and width
+            if self.barBg and self.barFg then
+                local width = self.barBg:GetWidth()
+                if width and width > 0 then                                         -- Check that width is valid
+                    local progress = math.min(1, math.max(0, current / max))
+                    local barWidth = math.min(width, math.max(1, width * progress)) -- Ensure fg never exceeds bg
+                    self.barFg:SetWidth(barWidth)
+                else
+                    self.barFg:SetWidth(1) -- Set minimum width if background width isn't ready
+                end
             end
         end
 
@@ -280,7 +286,7 @@ function SUP.CreateSkillTrackerDisplay()
             local totalHeight = math.abs(yOffset)
             self.skillContainer:SetHeight(totalHeight)
 
-            -- Update frame height to match content plus padding
+            -- Update frame height to match content
             local minHeight = GetMinimumHeight()
             local newHeight = math.max(minHeight, totalHeight)
             self:SetHeight(newHeight)
@@ -383,10 +389,11 @@ function SUP.CreateSkillTrackerDisplay()
         -- Update resize bounds
         self:SetResizeBounds(MIN_WIDTH, minHeight)
 
-        SUP.DebugPrint(string.format("Frame size: %d x %d (min height: %d)", width, height, minHeight))
-        SUP.DebugPrint(string.format("Entries: %d, Entry Height: %.1f", visibleEntries, newEntryHeight))
-        SUP.DebugPrint(string.format("Sizes - Icon: %.1f, Font: %.1f, Bar: %.1f",
-            iconSize, fontSize, barHeight))
+        -- Debug output with nil checks
+        if width and height and minHeight then
+            SUP.DebugPrint(string.format("Frame size: %d x %d (min height: %d)",
+                math.floor(width), math.floor(height), math.floor(minHeight)))
+        end
     end)
 
     -- Initialize entries table
